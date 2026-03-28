@@ -1,0 +1,2453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#080c14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lumina">
+<title>Lumina ⚡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="#" id="manifest-link">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23080c14'/><text y='72' x='50' text-anchor='middle' font-size='60'>⚡</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Outfit',sans-serif;transition:background 0.3s,color 0.3s}
+
+/* DARK THEME (default) */
+body.dark{
+  --bg:#080c14;--card:#151a28;--border:#232942;
+  --accent:#2DD4BF;--accent2:#6366f1;
+  --t0:#e8ecf4;--t1:#8892a8;--t2:#5a6478;
+  --grid:rgba(255,255,255,.05);
+  --danger:#ef4444;--warn:#f59e0b;--success:#10b981;
+  --purple:#a78bfa;--pink:#f472b6;--coral:#f97066;
+  background:#080c14;color:#e8ecf4;
+}
+/* LIGHT/BRIGHT THEME */
+body.light{
+  --bg:#f5f7fa;--card:#ffffff;--border:#e2e6ec;
+  --accent:#0d9488;--accent2:#4f46e5;
+  --t0:#1a1a2e;--t1:#5a6478;--t2:#8892a8;
+  --grid:rgba(0,0,0,.06);
+  --danger:#dc2626;--warn:#d97706;--success:#059669;
+  --purple:#7c3aed;--pink:#db2777;--coral:#e85d48;
+  background:#f5f7fa;color:#1a1a2e;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* APP SHELL */
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column;position:relative;overflow:hidden;max-width:430px;margin:0 auto}
+#page{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 14px 105px;scroll-behavior:smooth}
+
+/* ATMOSPHERIC BACKGROUND */
+.atm-bg{position:fixed;inset:0;pointer-events:none;z-index:0}
+.atm-bg::before{content:'';position:absolute;top:-20%;left:-20%;width:50%;height:50%;background:radial-gradient(circle,rgba(45,212,191,.05) 0%,transparent 70%)}
+.atm-bg::after{content:'';position:absolute;bottom:-20%;right:-20%;width:40%;height:40%;background:radial-gradient(circle,rgba(99,102,241,.03) 0%,transparent 70%)}
+
+/* ANIMATIONS */
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ta{0%{opacity:0;transform:translateX(-50%) translateY(-10px)}10%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+@keyframes flk{0%,100%{opacity:1}50%{opacity:.7}}
+@keyframes pu{0%{opacity:0;transform:scale(.85)}30%{opacity:1;transform:scale(1.05)}60%{transform:scale(.97)}100%{transform:scale(1)}}
+@keyframes gr{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes glow{0%,100%{box-shadow:0 0 8px var(--accent)}50%{box-shadow:0 0 20px var(--accent),0 0 40px rgba(45,212,191,.3)}}
+.fu{animation:fu 0.25s ease}
+.bp:active{transform:scale(.97)}
+.nc:active{transform:scale(.985)}
+
+/* CARD */
+.cd{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px}
+.cd-sm{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+
+/* PROGRESS BAR */
+.bb{height:5px;background:var(--grid);border-radius:3px;overflow:hidden;position:relative}
+.bf{height:100%;border-radius:3px;transition:width .8s ease;transform-origin:left}
+.gt{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.gp{background:linear-gradient(90deg,#3b82f6,var(--purple))}
+
+/* CHIP/BUTTON */
+.cb{display:inline-flex;align-items:center;padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--t1);font-family:'Outfit',sans-serif;font-size:11px;cursor:pointer;transition:all .15s;user-select:none}
+.cb.se{border-color:var(--accent);background:rgba(45,212,191,.12);color:var(--accent)}
+.cb-lg{padding:10px 18px;font-size:13px;border-radius:10px}
+.po{width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--t0);font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;text-align:left;transition:all .15s;margin-bottom:6px}
+.po:hover{border-color:var(--accent)}
+.po.correct{border-color:var(--accent);background:rgba(45,212,191,.15);color:var(--accent)}
+.po.wrong{border-color:var(--danger);background:rgba(239,68,68,.15);color:var(--danger)}
+
+/* REMINDER PILLS */
+.rem{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:12px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:#f59e0b;font-size:11px;cursor:pointer;white-space:nowrap;transition:opacity .15s}
+.rem:active{opacity:.7}
+
+/* GRADIENT TEXT */
+.logo{font-family:'Rajdhani',sans-serif;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* NAV BAR */
+#nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--card);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:100;backdrop-filter:blur(20px)}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.ni svg{width:22px;height:22px;transition:all .15s}
+.ni span{font-size:9px;transition:color .15s;font-family:'Outfit',sans-serif}
+.ni.act svg{stroke:var(--accent)}
+.ni.act span{color:var(--accent)}
+.ni:not(.act) svg{stroke:var(--t2)}
+.ni:not(.act) span{color:var(--t2)}
+
+/* OVERLAY */
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end;backdrop-filter:blur(4px)}
+.ovl-box{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-height:90vh;overflow-y:auto;padding:20px 16px max(20px,env(safe-area-inset-bottom));animation:fu .2s ease}
+.ovl-full{position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto;padding:20px 16px;animation:fu .2s ease}
+.ovl-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cls{background:none;border:1px solid var(--border);color:var(--t1);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+
+/* TOAST */
+#toast{position:fixed;top:50px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;z-index:999;pointer-events:none;animation:ta 2.2s ease forwards;white-space:nowrap;box-shadow:0 4px 20px rgba(45,212,191,.4)}
+
+/* RANK-UP OVERLAY */
+#rankUp{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;animation:pu .4s ease}
+.ru-g{font-family:'Rajdhani',sans-serif;font-size:68px;font-weight:700;animation:flk 1.2s infinite}
+.ru-t{font-family:'Rajdhani',sans-serif;font-size:22px;letter-spacing:6px;color:var(--t1);margin-bottom:8px}
+
+/* INPUT */
+.inp{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--t0);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .15s}
+.inp:focus{border-color:var(--accent)}
+.inp::placeholder{color:var(--t2)}
+textarea.inp{resize:vertical;min-height:80px}
+
+/* BTN */
+.btn{width:100%;padding:13px;border-radius:10px;border:none;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-g{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-g:active{opacity:.85;transform:scale(.99)}
+.btn-o{background:transparent;border:1px solid var(--border);color:var(--t1)}
+.btn-sm{padding:8px 16px;width:auto;font-size:12px;border-radius:8px}
+
+/* DIVIDER */
+.div{height:1px;background:var(--border);margin:12px 0}
+
+/* LABEL */
+.lbl{font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;font-weight:600}
+
+/* SCORE TILE */
+.tile{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;transition:all .15s;flex:1}
+.tile:active{transform:scale(.97)}
+.tile-val{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700}
+.tile-lbl{font-size:10px;color:var(--t2);margin-top:2px}
+
+/* SECTION HEADER */
+.sh{font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin:14px 0 8px}
+
+/* HEALTH RING */
+.ring-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:12px}
+.ring-lbl{font-size:11px;color:var(--t2);margin-top:6px}
+
+/* RADAR */
+.radar-wrap{display:flex;justify-content:center;margin:8px 0 12px}
+
+/* GLASS ICON */
+.gl-ic{font-size:22px;cursor:pointer;padding:4px;transition:all .15s;filter:grayscale(1) opacity(.4);user-select:none}
+.gl-ic.fil{filter:none;animation:fu .2s ease}
+.gl-ic:active{transform:scale(.9)}
+
+/* DIM BAR ROW */
+.dim-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer;padding:8px;border-radius:8px;transition:background .15s}
+.dim-row:hover{background:var(--grid)}
+
+/* ARTICLE CARD */
+.art-cd{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:6px;cursor:pointer;transition:all .15s}
+.art-cd:active{transform:scale(.99)}
+.art-cd.rd{opacity:.35}
+.art-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+
+/* FILTER PILLS */
+.fil-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
+.fil-scroll::-webkit-scrollbar{display:none}
+.fpill{padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--t1);font-size:11px;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'Outfit',sans-serif}
+.fpill.cpa{border-color:var(--accent);background:rgba(45,212,191,.12);color:var(--accent)}
+
+/* STOCK TICKER */
+.ticker{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px}
+.ticker::-webkit-scrollbar{display:none}
+.stk{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 12px;flex-shrink:0;text-decoration:none;color:inherit;transition:opacity .15s}
+.stk:active{opacity:.7}
+
+/* TASK ITEM */
+.tsk{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:6px;transition:all .15s}
+.tsk.dn{opacity:.35}
+.tsk-cb{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.tsk-cb.ck{background:var(--accent);border-color:var(--accent)}
+.pri{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px}
+.pri-H{background:rgba(239,68,68,.2);color:var(--danger)}
+.pri-M{background:rgba(245,158,11,.2);color:var(--warn)}
+.pri-L{background:rgba(16,185,129,.2);color:var(--success)}
+
+/* QUEST GATE */
+.gate{padding:12px;border-radius:10px;border:1px solid var(--border);margin-bottom:8px;cursor:pointer;transition:all .15s}
+.gate.done{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.08)}
+.gate:active{transform:scale(.99)}
+.glow{animation:glow 2s infinite}
+
+/* EXERCISE CHIP */
+.ex-cb{padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--t1);font-size:12px;cursor:pointer;transition:all .15s;text-align:left;width:100%}
+.ex-cb.dn{border-color:var(--accent);background:rgba(45,212,191,.12);color:var(--accent)}
+
+/* SPINNER */
+.spin{animation:spin .8s linear infinite;display:inline-block}
+
+/* QUOTE */
+.qt-it{font-style:italic;color:var(--t0);font-size:14px;line-height:1.6}
+.qt-au{color:var(--accent);font-size:12px;margin-top:6px}
+
+/* PROGRESS CIRCLE (for sprint days) */
+.day-ring{position:relative;width:36px;height:36px}
+.day-ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg)}
+.day-ring-lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700}
+
+/* JOURNAL */
+.jrn-it{padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:6px}
+.jrn-it .date{font-size:10px;color:var(--t2)}
+.jrn-it .body{font-size:13px;color:var(--t1);margin-top:4px;line-height:1.5}
+
+/* RANK ROADMAP */
+.rr-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:6px;border:1px solid transparent;transition:all .15s}
+.rr-row.cur{border-color:var(--accent);background:rgba(45,212,191,.08)}
+.rr-row.lck{opacity:.4}
+.rr-grade{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;width:28px;text-align:center}
+
+/* NORTH STAR */
+.nst-it{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:6px;cursor:pointer;transition:all .15s}
+.nst-it.dn{opacity:.5;text-decoration:line-through}
+.nst-cb{width:22px;height:22px;border-radius:6px;border:2px solid var(--warn);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.nst-cb.ck{background:var(--warn);border-color:var(--warn)}
+
+/* LIB ITEM */
+.lib-it{padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:6px}
+
+/* AI LESSON */
+.al-cd{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+.al-cd:active{transform:scale(.99)}
+.al-cd.comp{opacity:.55}
+
+/* LESSON STEP */
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--border)}
+.step-dot.done{background:var(--accent)}
+
+/* HIDDEN */
+.hid{display:none!important}
+
+/* FLEX UTILS */
+.r{display:flex;flex-direction:row}
+.c{display:flex;flex-direction:column}
+.ac{align-items:center}
+.jb{justify-content:space-between}
+.jc{justify-content:center}
+.g4{gap:4px}.g6{gap:6px}.g8{gap:8px}.g10{gap:10px}.g12{gap:12px}
+.f1{flex:1}
+.fw{flex-wrap:wrap}
+.ov-h{overflow:hidden}
+
+/* TEXT UTILS */
+.t0{color:var(--t0)}.t1{color:var(--t1)}.t2{color:var(--t2)}
+.ac-c{color:var(--accent)}
+.rj{font-family:'Rajdhani',sans-serif}
+.bold{font-weight:700}.semi{font-weight:600}
+.sm{font-size:12px}.xs{font-size:10px}.md{font-size:14px}.lg{font-size:16px}.xl{font-size:18px}.xxl{font-size:22px}
+
+/* AUTH SCREEN */
+#auth-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;padding:30px;text-align:center;position:relative;z-index:1}
+.auth-icon{font-size:48px;margin-bottom:8px}
+.auth-sub{font-size:13px;color:var(--t2);letter-spacing:1px}
+
+/* ONBOARDING */
+#ob-screen{display:flex;flex-direction:column;align-items:center;padding:30px 20px;gap:16px;min-height:100%;position:relative;z-index:1}
+.ob-step{width:100%;max-width:380px}
+.ob-goals{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0}
+
+/* GLOW CLASS */
+.glow-card{box-shadow:0 0 15px var(--warn),0 0 30px rgba(245,158,11,.2)}
+
+/* CALORIE RESULT */
+.macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.macro-it{background:var(--grid);border-radius:8px;padding:8px;text-align:center}
+.macro-val{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--accent)}
+.macro-lbl{font-size:10px;color:var(--t2)}
+
+/* DYK CARD */
+.dyk-cd{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:14px;margin-bottom:8px}
+
+/* BADGE */
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.badge-g{background:rgba(45,212,191,.15);color:var(--accent)}
+.badge-a{background:rgba(245,158,11,.15);color:var(--warn)}
+.badge-d{background:rgba(99,102,241,.15);color:var(--accent2)}
+.badge-r{background:rgba(239,68,68,.15);color:var(--danger)}
+
+/* SHIELD */
+.shld{font-size:18px;transition:opacity .3s}
+.shld.lost{opacity:.2}
+
+/* REMINDER SCROLL */
+.rem-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:8px}
+.rem-scroll::-webkit-scrollbar{display:none}
+
+/* HEALTH MOOD GRID */
+.mood-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.mood-btn{padding:8px 4px;border-radius:10px;border:1px solid var(--border);background:transparent;font-size:22px;cursor:pointer;transition:all .15s;text-align:center}
+.mood-btn.se{border-color:var(--accent);background:rgba(45,212,191,.12)}
+
+/* SLEEP GRID */
+.sleep-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.sleep-btn{padding:8px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--t1);font-size:12px;cursor:pointer;transition:all .15s;text-align:center}
+.sleep-btn.se{border-color:var(--accent);background:rgba(45,212,191,.12);color:var(--accent)}
+
+/* SPRINT DAY RING */
+.sprint-days{display:flex;justify-content:space-between;gap:4px;margin:12px 0}
+
+/* LESSON PROGRESS */
+.lp-dots{display:flex;gap:5px;margin:6px 0}
+.lp-dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .3s}
+.lp-dot.dn{background:var(--accent)}
+
+/* CALORIE LOADING */
+.cal-loading{text-align:center;padding:16px;color:var(--t2);font-size:13px}
+
+/* PRIORITY SELECTOR */
+.prio-sel{display:flex;gap:6px}
+.prio-btn{flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:transparent;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Outfit',sans-serif}
+.prio-btn.se-H{border-color:var(--danger);background:rgba(239,68,68,.15);color:var(--danger)}
+.prio-btn.se-M{border-color:var(--warn);background:rgba(245,158,11,.15);color:var(--warn)}
+.prio-btn.se-L{border-color:var(--success);background:rgba(16,185,129,.15);color:var(--success)}
+
+/* GHOST CARD */
+.ghost-win{color:var(--success);font-size:12px;font-weight:600;margin-top:4px}
+.ghost-lose{color:var(--danger);font-size:12px;font-weight:600;margin-top:4px}
+
+/* STAT BOX (lifetime grid) */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center}
+.stat-n{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--accent)}
+.stat-l{font-size:10px;color:var(--t2);margin-top:2px}
+
+/* DYK AI LOADING */
+.dyk-load{text-align:center;padding:12px;color:var(--t2);font-size:12px;animation:flk 1.5s infinite}
+
+/* IMPORT TASKS */
+.imp-count{font-size:12px;color:var(--accent);margin-top:6px}
+
+/* SCROLL TO TOP FADE */
+#page{scroll-padding-top:0}
+</style>
+</head>
+<body class="dark">
+<div class="atm-bg"></div>
+<div id="app">
+  <div id="page"></div>
+  <nav id="nav" style="display:none"></nav>
+</div>
+<div id="toast-wrap"></div>
+<div id="overlay-wrap"></div>
+<div id="rankup-wrap"></div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  LUMINA PWA — Complete Build
+//  Storage Key: lumina71 | Architect: Claude Opus 4.6
+// ═══════════════════════════════════════════════════
+
+var STORAGE_KEY = 'lumina71';
+var DEBOUNCE_MS = 600;
+
+// ─── CONTENT POOLS ───────────────────────────────────
+
+var RANKS = [
+  {g:'F',name:'Beginner',min:0,color:'#6B7280',desc:'The first step',dR:5},
+  {g:'E',name:'Explorer',min:700,color:'#60A5FA',desc:'Curiosity ignites',dR:12},
+  {g:'D',name:'Apprentice',min:2500,color:'#34D399',desc:'Patterns emerge',dR:20},
+  {g:'C',name:'Novice',min:6000,color:'#2DD4BF',desc:'Knowledge deepens',dR:20},
+  {g:'B',name:'Practitioner',min:13000,color:'#F472B6',desc:'Skills sharpen',dR:30},
+  {g:'A',name:'Expert',min:25000,color:'#F97066',desc:'Few reach here',dR:42},
+  {g:'S',name:'Specialist',min:43000,color:'#A78BFA',desc:'Mastery defined',dR:55},
+  {g:'SS',name:'Maestro',min:67000,color:'#F59E0B',desc:'Conductor of growth',dR:68},
+  {g:'SSS',name:'Visionary',min:97000,color:'#E9C46A',desc:'Sees beyond',dR:80},
+  {g:'L',name:'Luminary',min:130000,color:'#FBBF24',desc:'You are the light',dR:90}
+];
+
+var DIMS = [
+  {key:'world',label:'World',icon:'🌍',color:'#60A5FA',feeds:['articles','feed','quest-intel'],tip:'Read articles, complete quest intel gates, explore world news.'},
+  {key:'analytical',label:'Analytical',icon:'🧠',color:'#a78bfa',feeds:['puzzles','ai-lessons','quest-logic'],tip:'Solve puzzles, complete AI lessons, do quest logic challenges.'},
+  {key:'mastery',label:'Mastery',icon:'💪',color:'#34D399',feeds:['health','exercise','health-saves'],tip:'Log health daily, complete exercises, track sleep and mood.'},
+  {key:'professional',label:'Professional',icon:'💼',color:'#f472b6',feeds:['tasks','ai-lessons-lv2'],tip:'Complete high-priority tasks. Finish advanced AI lessons.'},
+  {key:'wisdom',label:'Wisdom',icon:'🌟',color:'#f59e0b',feeds:['journal','reflection','north-stars'],tip:'Write journal entries, complete quest reflections, check off North Star goals.'}
+];
+
+var FIT_GOALS = [
+  {id:'weight_loss',l:'Weight Loss',i:'⚖️'},
+  {id:'strength',l:'Strength',i:'🏋️'},
+  {id:'flexibility',l:'Flexibility',i:'🧘'},
+  {id:'cardio',l:'Cardio',i:'🏃'},
+  {id:'stress',l:'Stress Relief',i:'😌'},
+  {id:'general',l:'General',i:'✨'},
+  {id:'beginner',l:'Beginner',i:'🌱'}
+];
+
+var EXERCISES = [
+  {id:'e01',name:'Push-ups',icon:'💪',reps:'3×15',goals:['strength','beginner','general']},
+  {id:'e02',name:'Squats',icon:'🦵',reps:'3×20',goals:['strength','weight_loss','beginner']},
+  {id:'e03',name:'Plank',icon:'🧱',reps:'3×60s',goals:['strength','general','stress']},
+  {id:'e04',name:'Jumping Jacks',icon:'⭐',reps:'3×30',goals:['cardio','weight_loss','beginner']},
+  {id:'e05',name:'Mountain Climbers',icon:'🏔️',reps:'3×20',goals:['cardio','weight_loss']},
+  {id:'e06',name:'Burpees',icon:'🔥',reps:'3×10',goals:['cardio','strength','weight_loss']},
+  {id:'e07',name:'Lunges',icon:'🚶',reps:'3×12',goals:['strength','flexibility','beginner']},
+  {id:'e08',name:'High Knees',icon:'🏃',reps:'3×30s',goals:['cardio','weight_loss']},
+  {id:'e09',name:'Yoga Sun Salutation',icon:'🌞',reps:'5 rounds',goals:['flexibility','stress','beginner']},
+  {id:'e10',name:'Cat-Cow Stretch',icon:'🐱',reps:'2×10',goals:['flexibility','stress']},
+  {id:'e11',name:'Child\'s Pose',icon:'🧘',reps:'3×60s',goals:['flexibility','stress']},
+  {id:'e12',name:'Hip Flexor Stretch',icon:'🦿',reps:'2×60s',goals:['flexibility','general']},
+  {id:'e13',name:'Dead Bug',icon:'🐞',reps:'3×12',goals:['strength','general']},
+  {id:'e14',name:'Glute Bridge',icon:'🍑',reps:'3×15',goals:['strength','weight_loss']},
+  {id:'e15',name:'Box Breathing',icon:'🌬️',reps:'5 min',goals:['stress','general','beginner']},
+  {id:'e16',name:'Jump Rope',icon:'🪢',reps:'5×1min',goals:['cardio','weight_loss']},
+  {id:'e17',name:'Pull-ups',icon:'🏗️',reps:'3×8',goals:['strength']},
+  {id:'e18',name:'Tricep Dips',icon:'💺',reps:'3×12',goals:['strength']},
+  {id:'e19',name:'Bicycle Crunches',icon:'🚴',reps:'3×20',goals:['weight_loss','general']},
+  {id:'e20',name:'Wall Sit',icon:'🪑',reps:'3×60s',goals:['strength','general']},
+  {id:'e21',name:'Arnold Press',icon:'🏋️',reps:'3×10',goals:['strength']},
+  {id:'e22',name:'Band Pull-apart',icon:'🎀',reps:'3×15',goals:['flexibility','stress']},
+  {id:'e23',name:'Foam Roll ITB',icon:'🛞',reps:'2min each',goals:['flexibility','stress']},
+  {id:'e24',name:'Sprint Intervals',icon:'⚡',reps:'6×30s',goals:['cardio','weight_loss']},
+  {id:'e25',name:'Stair Climbs',icon:'🪜',reps:'5×2min',goals:['cardio','beginner']},
+  {id:'e26',name:'Side Plank',icon:'📐',reps:'3×30s',goals:['strength','general']},
+  {id:'e27',name:'Russian Twists',icon:'🌀',reps:'3×20',goals:['general','weight_loss']},
+  {id:'e28',name:'Leg Raises',icon:'🦶',reps:'3×15',goals:['general','weight_loss']},
+  {id:'e29',name:'Dumbbell Rows',icon:'🔨',reps:'3×12',goals:['strength']},
+  {id:'e30',name:'Shoulder Press',icon:'🙆',reps:'3×12',goals:['strength']},
+  {id:'e31',name:'Calf Raises',icon:'🦵',reps:'3×20',goals:['beginner','general']},
+  {id:'e32',name:'Inchworm Walk',icon:'🐛',reps:'3×10',goals:['flexibility','beginner']},
+  {id:'e33',name:'Bear Crawls',icon:'🐻',reps:'3×20m',goals:['strength','cardio']},
+  {id:'e34',name:'Kettlebell Swing',icon:'⚙️',reps:'3×15',goals:['strength','cardio']},
+  {id:'e35',name:'Good Mornings',icon:'☀️',reps:'3×12',goals:['flexibility','strength']},
+  {id:'e36',name:'Seated Meditation',icon:'🧘',reps:'10 min',goals:['stress','wisdom']},
+  {id:'e37',name:'Nordic Walk',icon:'🌲',reps:'30 min',goals:['cardio','stress','beginner']},
+  {id:'e38',name:'Dance Cardio',icon:'💃',reps:'20 min',goals:['cardio','stress']},
+  {id:'e39',name:'Swimming',icon:'🏊',reps:'30 min',goals:['cardio','stress','flexibility']},
+  {id:'e40',name:'Cycling',icon:'🚲',reps:'30 min',goals:['cardio','weight_loss']}
+];
+
+var NEWS = [
+  // Hot (8)
+  {id:'n01',title:'AI Agents Now Outperform Humans in Complex Multi-Step Tasks',src:'MIT Tech Review',time:'2h',type:'H',cat:'AI & Tech',url:'https://www.technologyreview.com/artificial-intelligence/',sum:'Researchers at MIT revealed that multi-modal AI agents have surpassed human performance on over 60% of benchmark multi-step reasoning tasks. The study highlights implications for knowledge work automation and human-AI collaboration.',quiz:{q:'What percentage of benchmark tasks did AI agents surpass humans in?',o:['Over 40%','Over 60%','Exactly 50%','Over 80%'],a:1}},
+  {id:'n02',title:'Bangladesh\'s Startup Ecosystem Hits $500M Valuation Milestone',src:'Daily Star',time:'3h',type:'H',cat:'BD',url:'https://www.thedailystar.net/business/economy',sum:'Bangladesh\'s tech ecosystem has crossed $500M in total startup valuations for the first time, driven by fintech, agritech, and healthtech sectors. The report credits government initiatives and growing internet penetration.',quiz:{q:'What sectors are driving Bangladesh\'s startup boom?',o:['Oil & Gas','Fintech, Agritech, Healthtech','Manufacturing only','Telecom'],a:1}},
+  {id:'n03',title:'Fed Signals Potential Rate Cut Amid Inflation Decline',src:'Bloomberg',time:'1h',type:'H',cat:'Finance',url:'https://www.bloomberg.com/economics',sum:'The Federal Reserve signaled possible rate reductions in Q3 2026 as inflation approaches the 2% target. Markets rallied 1.4% on the news, with bond yields falling across the board.',quiz:{q:'What inflation target is the Fed approaching?',o:['3%','2.5%','2%','1%'],a:2}},
+  {id:'n04',title:'World\'s First Carbon-Negative City Unveiled in Norway',src:'Guardian',time:'5h',type:'H',cat:'World',url:'https://www.theguardian.com/environment/climate-crisis',sum:'Oslo announced the completion of its 10-year carbon-negative urban transformation project, removing more CO2 than the city produces annually through a combination of green energy, carbon capture, and smart infrastructure.',quiz:{q:'What makes Oslo\'s project unique?',o:['Zero emissions','Carbon negative','Solar only city','Nuclear powered'],a:1}},
+  {id:'n05',title:'DeepMind\'s New Model Predicts Protein Structures 100x Faster',src:'Nature',time:'4h',type:'H',cat:'AI & Tech',url:'https://www.nature.com/subjects/machine-learning',sum:'DeepMind launched AlphaFold 3.5, capable of predicting protein folding structures 100 times faster than previous versions with 98.7% accuracy, potentially accelerating drug discovery by a decade.',quiz:{q:'How much faster is AlphaFold 3.5 vs previous versions?',o:['10x','50x','100x','200x'],a:2}},
+  {id:'n06',title:'Global EV Sales Surpass 25 Million Units in 2025',src:'Reuters',time:'6h',type:'H',cat:'World',url:'https://www.reuters.com/business/autos-transportation/',sum:'Electric vehicle sales hit a record 25 million units globally in 2025, with China accounting for 45% of all sales. Battery costs have fallen below $80/kWh for the first time, making EVs price-competitive with combustion engines.',quiz:{q:'What percentage of global EV sales was China in 2025?',o:['30%','45%','55%','60%'],a:1}},
+  {id:'n07',title:'Remote Work Productivity Peaks at 4-Day Weeks, Study Finds',src:'Harvard Business',time:'3h',type:'H',cat:'World',url:'https://hbr.org/topic/subject/managing-people',sum:'A landmark Harvard study across 3,000 companies found that 4-day work weeks increased productivity by 22% while reducing burnout by 34%. 78% of participating companies made the change permanent.',quiz:{q:'By how much did productivity increase with 4-day weeks?',o:['12%','22%','30%','45%'],a:1}},
+  {id:'n08',title:'Quantum Computing Breaks RSA-2048 Encryption in Minutes',src:'TechCrunch',time:'8h',type:'H',cat:'AI & Tech',url:'https://techcrunch.com/category/artificial-intelligence/',sum:'IBM\'s 1,000-qubit quantum system demonstrated breaking RSA-2048 encryption in under 3 minutes, raising urgent calls for quantum-resistant cryptography standards. NIST is fast-tracking post-quantum protocols.',quiz:{q:'What encryption was broken by the quantum computer?',o:['AES-256','RSA-1024','RSA-2048','SHA-512'],a:2}},
+  // World (4)
+  {id:'n09',title:'UN Climate Summit Reaches Historic Carbon Tax Agreement',src:'AFP',time:'1d',type:'W',cat:'World',url:'https://www.afp.com/en/topic/climate',sum:'190 nations agreed to a universal carbon tax of $50/ton starting 2027, the largest multilateral climate agreement since Paris 2015. Revenue will fund climate adaptation in developing nations.',quiz:{q:'What is the agreed carbon tax per ton?',o:['$25','$50','$75','$100'],a:1}},
+  {id:'n10',title:'Japan Launches World\'s First 6G Commercial Network',src:'Nikkei',time:'2d',type:'W',cat:'AI & Tech',url:'https://asia.nikkei.com/Business/Telecommunication',sum:'Japan\'s NTT DoCoMo launched the world\'s first commercial 6G network in Tokyo, offering speeds up to 100 Gbps — 100 times faster than 5G. The rollout targets nationwide coverage by 2028.',quiz:{q:'How fast is Japan\'s 6G network compared to 5G?',o:['10x','50x','100x','1000x'],a:2}},
+  {id:'n11',title:'SpaceX Starship Completes First Crewed Mars Flyby',src:'Space.com',time:'1d',type:'W',cat:'World',url:'https://www.space.com/spacex',sum:'A crew of 6 astronauts aboard SpaceX Starship completed a historic Mars flyby, collecting atmospheric data and testing deep space life support systems. The mission lasted 8 months total.',quiz:{q:'How many astronauts were on the Mars flyby?',o:['2','4','6','8'],a:2}},
+  {id:'n12',title:'WHO Declares Loneliness a Global Health Emergency',src:'BBC',time:'3d',type:'W',cat:'World',url:'https://www.bbc.com/news/health',sum:'The World Health Organization declared loneliness a global health emergency, equivalent to smoking 15 cigarettes daily in terms of mortality risk. The agency is launching a $2B global connection initiative.',quiz:{q:'Loneliness equals the health risk of smoking how many cigarettes daily?',o:['5','10','15','20'],a:2}},
+  // BD (5)
+  {id:'n13',title:'Bangladesh Digital Taka Pilot Expands to 5 Cities',src:'Financial Express',time:'4h',type:'B',cat:'BD',url:'https://thefinancialexpress.com.bd/economy/bangladesh',sum:'Bangladesh Bank expanded its Central Bank Digital Currency pilot to Dhaka, Chittagong, Sylhet, Rajshahi, and Khulna, reaching 2 million users. A nationwide rollout is planned by December 2026.',quiz:{q:'How many cities joined the Digital Taka pilot?',o:['3','5','7','10'],a:1}},
+  {id:'n14',title:'Dhaka Metro Rail Phase 3 Construction Begins',src:'Dhaka Tribune',time:'1d',type:'B',cat:'BD',url:'https://www.dhakatribune.com/bangladesh',sum:'Phase 3 of Dhaka Metro Rail broke ground, extending Line 6 to Uttara North and adding two new lines covering Mirpur and Mohakhali corridors. Completion expected by 2029.',quiz:{q:'When is Dhaka Metro Phase 3 expected to complete?',o:['2027','2028','2029','2030'],a:2}},
+  {id:'n15',title:'Bangladesh Garment Sector Adopts AI Quality Control',src:'The Business Standard',time:'2d',type:'B',cat:'BD',url:'https://www.tbsnews.net/economy/rmg',sum:'Major RMG factories in Bangladesh deployed AI-based quality control systems reducing defect rates by 35% and cutting production costs by 18%. The technology was co-developed with local tech firms.',quiz:{q:'By how much did AI quality control reduce defect rates?',o:['20%','25%','35%','50%'],a:2}},
+  {id:'n16',title:'Sylhet Flash Floods: Early Warning System Saves Thousands',src:'Prothom Alo',time:'3d',type:'B',cat:'BD',url:'https://en.prothomalo.com/bangladesh',sum:'A newly deployed AI-powered flood early warning system in Sylhet gave residents 18 hours advance notice before major flash floods, enabling safe evacuation of over 200,000 people.',quiz:{q:'How many hours advance notice did the early warning system provide?',o:['6','12','18','24'],a:2}},
+  {id:'n17',title:'BD Pharma Industry Achieves WHO Pre-qualification for 50 Drugs',src:'New Age',time:'4d',type:'B',cat:'BD',url:'https://www.newagebd.net/business',sum:'Bangladesh pharmaceutical companies received WHO pre-qualification for 50 generic drugs, opening new export markets in Africa and Southeast Asia worth an estimated $800M annually.',quiz:{q:'What is the estimated annual value of new pharmaceutical export markets?',o:['$400M','$600M','$800M','$1B'],a:2}},
+  // Sports (1)
+  {id:'n18',title:'Bangladesh Tigers Beat India in T20 Series 3-2',src:'ESPN Cricinfo',time:'2h',type:'S',cat:'Sports',url:'https://www.espncricinfo.com/ci/content/team/25.html',sum:'Bangladesh clinched the T20 series against India 3-2 in a thrilling final match at Mirpur. Shakib Al Hasan was named Player of the Series with 22 wickets across 5 matches.',quiz:{q:'Who won the T20 series?',o:['India 3-2','Bangladesh 3-2','Tied 2-2','India 4-1'],a:1}},
+  // Entertainment (2)
+  {id:'n19',title:'Dhallywood Film \'Ruposhi Bangla\' Wins International Award',src:'Prothom Alo',time:'1d',type:'E',cat:'Entertainment',url:'https://en.prothomalo.com/entertainment',sum:'The Bangladeshi film Ruposhi Bangla won Best Foreign Film at the Singapore International Film Festival, marking the first such win for a Bangladeshi production in the festival\'s 40-year history.',quiz:{q:'What award did Ruposhi Bangla win?',o:['Best Screenplay','Best Foreign Film','Best Director','Audience Choice'],a:1}},
+  {id:'n20',title:'Spotify Reports Bangla Music Streams Up 200% in 2025',src:'Daily Star',time:'2d',type:'E',cat:'Entertainment',url:'https://www.thedailystar.net/entertainment',sum:'Spotify data shows Bangla-language music streams grew 200% in 2025, driven by global Bangladeshi diaspora and rising interest in South Asian pop. Artcell and Chirkutt lead in global streams.',quiz:{q:'By how much did Bangla music streams grow on Spotify in 2025?',o:['100%','150%','200%','300%'],a:2}},
+  // AI & Tech (3)
+  {id:'n21',title:'ChatGPT-5 Passes Bar Exam in Top 2% Nationwide',src:'OpenAI Blog',time:'3h',type:'T',cat:'AI & Tech',url:'https://openai.com/news/',sum:'OpenAI\'s ChatGPT-5 scored in the top 2% of the US Bar Examination, outperforming 98% of human test-takers. The model demonstrated advanced legal reasoning and case law application.',quiz:{q:'What percentile did ChatGPT-5 score in the Bar Exam?',o:['Top 10%','Top 5%','Top 2%','Top 1%'],a:2}},
+  {id:'n22',title:'Meta\'s AR Glasses Achieve 8-Hour Battery Life',src:'The Verge',time:'5h',type:'T',cat:'AI & Tech',url:'https://www.theverge.com/meta',sum:'Meta\'s new Orion AR glasses hit 8-hour battery life with full holographic display active — triple the previous generation. The glasses weigh just 38 grams and launch at $999 in Q2 2026.',quiz:{q:'How long is the battery life of Meta\'s new Orion AR glasses?',o:['4 hours','6 hours','8 hours','10 hours'],a:2}},
+  {id:'n23',title:'Apple Neural Engine Runs Full LLMs On-Device',src:'9to5Mac',time:'6h',type:'T',cat:'AI & Tech',url:'https://9to5mac.com/guides/ai/',sum:'Apple\'s A19 Pro Neural Engine can now run 70B parameter language models entirely on-device with no cloud dependency, enabling fully private AI assistants in the iPhone 17 Pro lineup.',quiz:{q:'How many parameters can Apple\'s A19 Neural Engine run on-device?',o:['7B','13B','70B','100B'],a:2}},
+  // Finance (2)
+  {id:'n24',title:'DSEX Crosses 8,000 Points for First Time',src:'DSE',time:'1h',type:'F',cat:'Finance',url:'https://dsebd.org',sum:'The Dhaka Stock Exchange\'s DSEX index crossed the historic 8,000-point mark for the first time, driven by banking, telecom, and pharmaceutical sectors. Analysts credit macroeconomic stability and foreign investment.',quiz:{q:'Which sectors drove DSEX above 8,000?',o:['Only banking','Garments only','Banking, telecom, pharma','Only tech'],a:2}},
+  {id:'n25',title:'Crypto Market Cap Hits $5 Trillion New ATH',src:'CoinDesk',time:'4h',type:'F',cat:'Finance',url:'https://www.coindesk.com/markets/',sum:'Total cryptocurrency market capitalization hit a new all-time high of $5 trillion, with Bitcoin leading at $142,000. Institutional adoption from pension funds and sovereign wealth is cited as the main catalyst.',quiz:{q:'What is Bitcoin\'s price at the new crypto market ATH?',o:['$98,000','$120,000','$142,000','$160,000'],a:2}}
+];
+
+var STOCKS = [
+  {name:'DSEX',val:'7,942',chg:'+1.2%',up:true,url:'https://dsebd.org'},
+  {name:'DS30',val:'2,876',chg:'+0.8%',up:true,url:'https://dsebd.org/ds30_share.php'},
+  {name:'S&P',val:'5,412',chg:'-0.3%',up:false,url:'https://spglobal.com'},
+  {name:'Gold',val:'$3,124',chg:'+0.5%',up:true,url:'https://goldr.org'}
+];
+
+var AI_LESSONS = [
+  {id:'al01',title:'Prompting 101',lv:1,icon:'🎯',xp:15,steps:[
+    {t:'Role / Context / Task',c:'The most powerful prompting framework is Role-Context-Task (RCT). Start by assigning a role: "You are a senior financial analyst." Then add context: "We are analyzing Q3 earnings for a Bangladeshi bank." Finally, state the task: "Identify 3 key risks from this data." This structure activates domain knowledge and produces expert-level outputs.'},
+    {t:'Chain-of-Thought',c:'Chain-of-thought prompting dramatically improves AI reasoning by asking the model to think step by step. Instead of "What is 17% of 450?", try "Calculate 17% of 450. Show your work step by step." For complex decisions, add: "Think through all relevant factors before giving your final answer." This reduces errors by up to 40% on reasoning tasks.'},
+    {t:'Practice Makes Perfect',c:'The best way to master prompting is iteration. After getting a response, refine with: "Good start, but make it more concise" or "Rewrite this for a non-technical audience." Use examples: "Write this in the style of [example]." The more specific your feedback, the better the output. Practice daily with real work tasks to build intuition.'}
+  ]},
+  {id:'al02',title:'AI for Documents',lv:1,icon:'📄',xp:15,steps:[
+    {t:'Upload & Summarize',c:'Modern AI can process entire documents in seconds. To get a powerful summary, use: "Summarize this document in 5 bullet points, highlighting: (1) main argument, (2) key evidence, (3) conclusions, (4) action items, and (5) potential concerns." For legal or financial documents, add: "Flag any unusual clauses or risks." This replaces hours of reading.'},
+    {t:'Data Extraction',c:'AI excels at extracting structured data from unstructured text. Try: "Extract all financial figures from this report and present them in a table with: metric, value, time period, and source." For contracts: "List all dates, obligations, parties, and penalty clauses." For emails: "Extract all action items with assigned owners and deadlines." Output directly to Excel.'},
+    {t:'Report Generation',c:'Combine AI\'s reading and writing abilities: "I will give you data from 3 sources. Synthesize them into an executive summary with: situation, key findings (3-5 points), analysis, and recommendations. Write for a CEO who has 2 minutes to read this." Always include: "Flag any contradictions between sources." This workflow saves analysts 3-4 hours per report.'}
+  ]},
+  {id:'al03',title:'AI for Finance',lv:2,icon:'💰',xp:20,steps:[
+    {t:'Excel Formula Generation',c:'AI can write complex Excel formulas instantly. Describe what you need: "Write an Excel formula to calculate the weighted average cost of capital (WACC) given equity weight in B2, cost of equity in C2, debt weight in D2, cost of debt in E2, and tax rate in F2." Or: "Create a formula that flags any cell in column B where the value is more than 2 standard deviations from the mean of B2:B100." Saves hours of formula hunting.'},
+    {t:'Financial Scenario Analysis',c:'Use AI for rapid scenario modeling: "Analyze these three revenue scenarios for a Bangladeshi RMG company: (1) 5% growth, (2) flat, (3) -10% decline. For each, calculate: net income, operating leverage impact, cash runway, and break-even. Assume: fixed costs 40M BDT, variable costs 60% of revenue, base revenue 200M BDT, tax rate 25%." Gets you boardroom-quality analysis in 30 seconds.'},
+    {t:'Credit 5C Assessment',c:'The 5 Cs of Credit (Character, Capacity, Capital, Collateral, Conditions) form the gold standard for loan analysis. Prompt: "Analyze this borrower profile using the 5C framework: [paste data]. For each C: rate as Strong/Adequate/Weak, explain why, and identify the top risk. Conclude with an overall credit recommendation and suggested interest rate band." Perfect for banking professionals needing consistent, documented analysis.'}
+  ]},
+  {id:'al04',title:'AI for Tech & Science',lv:2,icon:'⚙️',xp:20,steps:[
+    {t:'Code Generation',c:'AI writes production-ready code when given precise requirements. The formula: "Write a [language] function that [does X]. Input: [describe type/format]. Output: [describe expected result]. Handle edge cases: [list them]. Include comments." Example: "Write a Python function that calculates compound interest. Input: principal (float), rate (float, annual %), years (int). Output: final amount rounded to 2 decimals. Handle: zero/negative inputs." Always ask for unit tests too.'},
+    {t:'Debugging Workflows',c:'AI debugging beats Stack Overflow for most issues. Share: "Here is my code: [paste]. Here is the error: [paste error message and stack trace]. Here is what I expect it to do: [explain]. Here is what actually happens: [describe]. What is wrong and how do I fix it?" Add: "Also identify any other potential bugs or code quality issues." For complex bugs: "Explain your reasoning step by step before giving the solution."'},
+    {t:'Automation Design',c:'AI helps design automation workflows even if you\'re not technical. Describe your repetitive task: "I spend 2 hours every Monday doing: [describe steps]. I use: [tools/software]. Design an automation workflow that eliminates this. Include: (1) tool recommendations, (2) step-by-step setup, (3) estimated time savings, (4) potential failure points and solutions." Works for Excel macros, email rules, report generation, data pipelines, and more.'}
+  ]}
+];
+
+var QTS = [
+  {t:'The secret of getting ahead is getting started.',a:'Mark Twain'},
+  {t:'It does not matter how slowly you go as long as you do not stop.',a:'Confucius'},
+  {t:'Success is not final, failure is not fatal: it is the courage to continue that counts.',a:'Winston Churchill'},
+  {t:'The way to get started is to quit talking and begin doing.',a:'Walt Disney'},
+  {t:'Don\'t watch the clock; do what it does. Keep going.',a:'Sam Levenson'},
+  {t:'Believe you can and you\'re halfway there.',a:'Theodore Roosevelt'},
+  {t:'Your time is limited, so don\'t waste it living someone else\'s life.',a:'Steve Jobs'},
+  {t:'If life were predictable it would cease to be life, and be without flavor.',a:'Eleanor Roosevelt'},
+  {t:'If you look at what you have in life, you\'ll always have more.',a:'Oprah Winfrey'},
+  {t:'If you set your goals ridiculously high and it\'s a failure, you will fail above everyone else\'s success.',a:'James Cameron'},
+  {t:'Life is not measured by the number of breaths we take, but by the moments that take our breath away.',a:'Maya Angelou'},
+  {t:'If you want to live a happy life, tie it to a goal, not to people or things.',a:'Albert Einstein'},
+  {t:'Never let the fear of striking out keep you from playing the game.',a:'Babe Ruth'},
+  {t:'Money and success don\'t change people; they merely amplify what is already there.',a:'Will Smith'},
+  {t:'Your life only gets better when you get better.',a:'Brian Tracy'},
+  {t:'The only impossible journey is the one you never begin.',a:'Tony Robbins'},
+  {t:'In this life we cannot do great things. We can only do small things with great love.',a:'Mother Teresa'},
+  {t:'When you cease to dream you cease to live.',a:'Malcolm Forbes'},
+  {t:'You have brains in your head. You have feet in your shoes.',a:'Dr. Seuss'},
+  {t:'You only live once, but if you do it right, once is enough.',a:'Mae West'},
+  {t:'In three words I can sum up everything I\'ve learned about life: it goes on.',a:'Robert Frost'},
+  {t:'To many of us are not living our dreams because we are living our fears.',a:'Les Brown'},
+  {t:'I choose to make the rest of my life the best of my life.',a:'Louise Hay'},
+  {t:'Never lose hope. Storms make people stronger and never last forever.',a:'Roy T. Bennett'},
+  {t:'The most wasted of all days is one without laughter.',a:'E.E. Cummings'},
+  {t:'Dwell on the beauty of life. Watch the stars, and see yourself running with them.',a:'Marcus Aurelius'},
+  {t:'You must be the change you wish to see in the world.',a:'Mahatma Gandhi'},
+  {t:'Spread love everywhere you go. Let no one ever come to you without leaving happier.',a:'Mother Teresa'},
+  {t:'When you reach the end of your rope, tie a knot in it and hang on.',a:'Franklin D. Roosevelt'},
+  {t:'Always remember that you are absolutely unique. Just like everyone else.',a:'Margaret Mead'},
+  {t:'Don\'t go through life, grow through life.',a:'Eric Butterworth'},
+  {t:'Life is what happens when you\'re busy making other plans.',a:'John Lennon'},
+  {t:'You can never plan the future by the past.',a:'Edmund Burke'},
+  {t:'Live in the sunshine, swim the sea, drink the wild air.',a:'Ralph Waldo Emerson'},
+  {t:'The greatest glory in living lies not in never falling, but in rising every time we fall.',a:'Nelson Mandela'},
+  {t:'The purpose of our lives is to be happy.',a:'Dalai Lama'},
+  {t:'Life is short, and it is here to be lived.',a:'Kate Winslet'},
+  {t:'You make a living by what you get. You make a life by what you give.',a:'Winston Churchill'},
+  {t:'Change your thoughts and you change your world.',a:'Norman Vincent Peale'},
+  {t:'Either write something worth reading or do something worth writing.',a:'Benjamin Franklin'},
+  {t:'Not how long, but how well you have lived is the main thing.',a:'Seneca'},
+  {t:'He that is good for making excuses is seldom good for anything else.',a:'Benjamin Franklin'},
+  {t:'I attribute my success to this: I never gave or took any excuse.',a:'Florence Nightingale'},
+  {t:'You miss 100% of the shots you don\'t take.',a:'Wayne Gretzky'},
+  {t:'I\'ve missed more than 9000 shots in my career. That\'s why I succeed.',a:'Michael Jordan'},
+  {t:'The most difficult thing is the decision to act, the rest is merely tenacity.',a:'Amelia Earhart'},
+  {t:'Every strike brings me closer to the next home run.',a:'Babe Ruth'},
+  {t:'Definiteness of purpose is the starting point of all achievement.',a:'W. Clement Stone'},
+  {t:'Life isn\'t about getting and having, it\'s about giving and being.',a:'Kevin Kruse'},
+  {t:'Life is what we make it, always has been, always will be.',a:'Grandma Moses'},
+  // extra to 100
+  {t:'The mind is everything. What you think you become.',a:'Buddha'},
+  {t:'An unexamined life is not worth living.',a:'Socrates'},
+  {t:'Spread your wings and let the fairy in you fly!',a:'Nora Roberts'},
+  {t:'The two most important days in your life: the day you are born and the day you find out why.',a:'Mark Twain'},
+  {t:'Everything you\'ve ever wanted is on the other side of fear.',a:'George Addair'},
+  {t:'Dream big and dare to fail.',a:'Norman Vaughan'},
+  {t:'You don\'t have to be great to start, but you have to start to be great.',a:'Zig Ziglar'},
+  {t:'Act as if what you do makes a difference. It does.',a:'William James'},
+  {t:'Success is getting what you want, happiness is wanting what you get.',a:'W.P. Kinsella'},
+  {t:'We become what we repeatedly do.',a:'Sean Covey'},
+  {t:'Nothing great was ever achieved without enthusiasm.',a:'Ralph Waldo Emerson'},
+  {t:'If you can dream it, you can achieve it.',a:'Zig Ziglar'},
+  {t:'All our dreams can come true, if we have the courage to pursue them.',a:'Walt Disney'},
+  {t:'The road to success and the road to failure are almost exactly the same.',a:'Colin R. Davis'},
+  {t:'Success usually comes to those who are too busy to be looking for it.',a:'Henry David Thoreau'},
+  {t:'Opportunities don\'t happen. You create them.',a:'Chris Grosser'},
+  {t:'Try not to become a person of success, but rather try to become a person of value.',a:'Albert Einstein'},
+  {t:'It is not the mountain we conquer but ourselves.',a:'Edmund Hillary'},
+  {t:'Nothing is impossible. The word itself says I\'m possible.',a:'Audrey Hepburn'},
+  {t:'The only way to do great work is to love what you do.',a:'Steve Jobs'},
+  {t:'If you are not willing to risk the usual, you will have to settle for the ordinary.',a:'Jim Rohn'},
+  {t:'All progress takes place outside the comfort zone.',a:'Michael John Bobak'},
+  {t:'People who are crazy enough to think they can change the world, are the ones who do.',a:'Rob Siltanen'},
+  {t:'Failure will never overtake me if my determination to succeed is strong enough.',a:'Og Mandino'},
+  {t:'Entrepreneurs are great at dealing with uncertainty and also very good at focusing on the future.',a:'Naveen Jain'},
+  {t:'We may encounter many defeats but we must not be defeated.',a:'Maya Angelou'},
+  {t:'Knowing is not enough; we must apply. Wishing is not enough; we must do.',a:'Johann Wolfgang Von Goethe'},
+  {t:'Whether you think you can or think you can\'t, you\'re right.',a:'Henry Ford'},
+  {t:'I find that the harder I work, the more luck I seem to have.',a:'Thomas Jefferson'},
+  {t:'The starting point of all achievement is desire.',a:'Napoleon Hill'},
+  {t:'Success is the sum of small efforts, repeated day in and day out.',a:'Robert Collier'},
+  {t:'If you want to achieve excellence, you can get there today.',a:'Thomas D. Jakes'},
+  {t:'Just when the caterpillar thought the world was ending, he turned into a butterfly.',a:'Proverb'},
+  {t:'Successful entrepreneurs are givers and not takers of positive energy.',a:'Anonymous'},
+  {t:'Whenever you find yourself doubting how far you can go, just remember how far you have come.',a:'Anonymous'},
+  {t:'Don\'t let the fear of losing be greater than the excitement of winning.',a:'Robert Kiyosaki'},
+  {t:'If you genuinely want something, don\'t wait for it — teach yourself to be impatient.',a:'Gurbaksh Chahal'},
+  {t:'Don\'t let what you cannot do interfere with what you can do.',a:'John R. Wooden'},
+  {t:'You\'ve got to get up every morning with determination if you\'re going to go to bed with satisfaction.',a:'George Lorimer'},
+  {t:'To live a creative life, we must lose our fear of being wrong.',a:'Anonymous'},
+  {t:'If you are going through hell, keep going.',a:'Winston Churchill'},
+  {t:'What lies behind us and what lies before us are tiny matters compared to what lies within us.',a:'Ralph Waldo Emerson'},
+  {t:'You are never too old to set another goal or to dream a new dream.',a:'C.S. Lewis'},
+  {t:'To see what is right and not to do it is want of courage.',a:'Confucius'},
+  {t:'The distance between insanity and genius is measured only by success.',a:'Bruce Feirstein'},
+  {t:'When you stop chasing the wrong things, you give the right things a chance to catch you.',a:'Lolly Daskal'},
+  {t:'No masterpiece was ever created by a lazy artist.',a:'Anonymous'},
+  {t:'Happiness is a butterfly, which when pursued, is always beyond your grasp.',a:'Nathaniel Hawthorne'},
+  {t:'If you can\'t outplay them, outwork them.',a:'Ben Hogan'},
+  {t:'Give me a stock clerk with a goal and I\'ll give you a man who will make history.',a:'J.C. Penney'},
+  {t:'I owe my success to having listened respectfully to the very best advice, and then going away and doing the exact opposite.',a:'G.K. Chesterton'}
+];
+
+var PROMPTS = [
+  'What is one belief you hold today that you didn\'t have a year ago?',
+  'Describe a moment this week when you felt most alive. What made it special?',
+  'What fear is currently holding you back from something you want?',
+  'If your future self could send you a message, what would it say?',
+  'What is one habit you want to build, and what\'s stopping you?',
+  'Describe someone who inspires you and what specific quality you want to develop.',
+  'What does success mean to you today — not society\'s definition, yours?',
+  'What is the kindest thing you\'ve done recently? How did it feel?',
+  'What are you grateful for that you often take for granted?',
+  'If you had unlimited time today, what would you actually do?',
+  'What\'s one thing you know you should stop doing, and why haven\'t you?',
+  'Write about a challenge you\'re facing. What would wisdom say about it?'
+];
+
+var FUN_MSG = ['Cool!','Yeah!','Lit!','Chad!','Giga Chad!','Rizzler!','On fire!','Power move!','Awesome!','Impressive!','On a roll!','Killing it!','Levelling Spree!','Smashin\' it!','Hit it!','Mic Drop!','Aura Farming!'];
+
+var TASK_CATS = [
+  {id:'work',l:'Work',e:'💼'},
+  {id:'learning',l:'Learning',e:'📚'},
+  {id:'health',l:'Health',e:'❤️'},
+  {id:'personal',l:'Personal',e:'🌟'},
+  {id:'finance',l:'Finance',e:'💰'}
+];
+
+// ─── PUZZLE TEMPLATES ────────────────────────────────
+
+var RIDDLES = [
+  {q:'I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?',a:'An echo',o:['A shadow','An echo','A mirror','A dream']},
+  {q:'The more you take, the more you leave behind. What am I?',a:'Footsteps',o:['Time','Footsteps','Money','Memories']},
+  {q:'I have cities, but no houses live there. I have mountains, but no trees grow there. I have water, but no fish swim there. What am I?',a:'A map',o:['A painting','A globe','A map','A book']},
+  {q:'What has hands but cannot clap?',a:'A clock',o:['A scarecrow','A glove','A clock','A puppet']},
+  {q:'What gets wetter the more it dries?',a:'A towel',o:['Sand','A towel','Cotton','The sun']}
+];
+
+var BANKING_QS = [
+  {q:'What does CAR stand for in banking regulation?',a:'Capital Adequacy Ratio',o:['Cash Asset Reserve','Capital Adequacy Ratio','Credit Approval Rate','Currency Allocation Ratio']},
+  {q:'Which document is required for KYC in Bangladesh?',a:'National ID Card',o:['Passport only','National ID Card','Driving License','Birth Certificate']},
+  {q:'What is the current CRR (Cash Reserve Requirement) set by Bangladesh Bank?',a:'4%',o:['2%','3%','4%','5%']},
+  {q:'What does NPA stand for in banking?',a:'Non-Performing Asset',o:['Net Profit Average','Non-Performing Asset','New Portfolio Addition','Net Present Amount']},
+  {q:'What is the Basel III minimum CET1 ratio?',a:'4.5%',o:['2%','3.5%','4.5%','6%']}
+];
+
+function genPuzzle(seed) {
+  var rng = function(n){seed=(seed*1664525+1013904223)&0xFFFFFFFF;return Math.abs(seed)%n};
+  var cat = rng(5);
+  if(cat===0){
+    var p=Math.abs(seed)%100000+10000, r=rng(15)+5, t=rng(60)+12;
+    var monthly=p*(r/1200)*Math.pow(1+r/1200,t)/(Math.pow(1+r/1200,t)-1);
+    var ans=Math.round(monthly);
+    var opts=[ans-500,ans,ans+500,ans+1000];
+    opts.sort(function(){return rng(3)-1});
+    return{q:'Loan amount: BDT '+p.toLocaleString()+' | Rate: '+r+'% p.a. | Tenure: '+t+' months\nWhat is the approximate monthly EMI?',o:opts.map(function(v){return 'BDT '+Math.abs(v).toLocaleString()}),a:opts.indexOf(ans),dim:'analytical',cat:'Finance'};
+  } else if(cat===1){
+    var n1=rng(9)+1,n2=rng(9)+1,n3=rng(9)+1;
+    var ans2=n1+n2*n3;
+    var opts2=[ans2-2,ans2-1,ans2,ans2+3];
+    opts2.sort(function(){return rng(3)-1});
+    return{q:'Solve using BODMAS:\n'+n1+' + '+n2+' × '+n3+' = ?',o:opts2.map(String),a:opts2.indexOf(ans2),dim:'analytical',cat:'Logic'};
+  } else if(cat===2){
+    var r2=RIDDLES[rng(5)];
+    return{q:r2.q,o:r2.o,a:r2.o.indexOf(r2.a),dim:'analytical',cat:'Riddle'};
+  } else if(cat===3){
+    var bq=BANKING_QS[rng(5)];
+    return{q:bq.q,o:bq.o,a:bq.o.indexOf(bq.a),dim:'analytical',cat:'Banking'};
+  } else {
+    var ops=['+','-','×'];
+    var op=ops[rng(3)];
+    var a2=rng(50)+10,b2=rng(20)+5;
+    var ans3=op==='+'?a2+b2:op==='-'?a2-b2:a2*b2;
+    var opts3=[ans3-5,ans3-2,ans3,ans3+4];
+    opts3.sort(function(){return rng(3)-1});
+    return{q:'Quick Maths:\n'+a2+' '+op+' '+b2+' = ?',o:opts3.map(String),a:opts3.indexOf(ans3),dim:'analytical',cat:'Maths'};
+  }
+}
+
+// ─── STATE MANAGEMENT ────────────────────────────────
+
+function defState(){
+  return{
+    nm:'',on:false,ob:false,
+    xp:0,txp:0,wxp:0,
+    str:0,ld:'',sh:3,
+    dg:{n:0,p:false,r:false,d:''},
+    nr:{},nl:{},ns:{},
+    tasks:[],
+    hp:{sl:null,mo:null,gl:0,ex:[],sv:false,d:''},
+    lib:[],jrn:[],nst:[],
+    dm:{world:0,analytical:0,mastery:0,professional:0,wisdom:0},
+    ta:0,tp:0,tt:0,tj:0,ad:0,
+    dayXps:{},
+    prefs:{goals:[],workCtx:'',customEx:[]},
+    ghost:0,reads:0,
+    aiProg:{},
+    theme:'dark',
+    obStep:0,
+    dykCache:'',
+    dykDate:''
+  };
+}
+
+var S = defState();
+var saveTimer = null;
+
+function loadState(){
+  try{
+    var raw=localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      var saved=JSON.parse(raw);
+      var def=defState();
+      // Merge saved into defaults to handle schema changes
+      S=Object.assign(def,saved);
+      if(!S.dm)S.dm={world:0,analytical:0,mastery:0,professional:0,wisdom:0};
+      if(!S.prefs)S.prefs={goals:[],workCtx:'',customEx:[]};
+      if(!S.dayXps)S.dayXps={};
+      if(!S.aiProg)S.aiProg={};
+      if(!S.dg)S.dg={n:0,p:false,r:false,d:''};
+      if(!S.hp)S.hp={sl:null,mo:null,gl:0,ex:[],sv:false,d:''};
+    }
+  }catch(e){S=defState()}
+}
+
+function saveState(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(function(){
+    try{localStorage.setItem(STORAGE_KEY,JSON.stringify(S))}catch(e){}
+  },DEBOUNCE_MS);
+}
+
+function saveNow(){
+  clearTimeout(saveTimer);
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(S))}catch(e){}
+}
+
+// ─── DATE HELPERS ─────────────────────────────────────
+
+function todayStr(){return new Date().toISOString().split('T')[0]}
+function dayNum(){var s=new Date(2026,0,1);var n=new Date();return Math.floor((n-s)/(86400000))+1}
+function getHour(){return new Date().getHours()}
+function getYear(){return new Date().getFullYear()}
+
+function doResets(){
+  var td=todayStr();
+  if(S.ld!==td){
+    // Daily reset
+    S.ghost=S.txp;
+    // Streak
+    var yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
+    var yd=yesterday.toISOString().split('T')[0];
+    if(S.ld===yd)S.str=(S.str||0)+1;
+    else if(S.ld!==td)S.str=0;
+    S.txp=0;
+    S.reads=0;
+    S.dg={n:0,p:false,r:false,d:td};
+    S.hp={sl:null,mo:null,gl:0,ex:[],sv:false,d:td};
+    S.ad=(S.ad||0)+1;
+    // Clear DYK cache for fresh daily fact
+    S.dykCache='';S.dykDate='';
+    // Weekly reset (Sunday)
+    if(new Date().getDay()===0){
+      if(S.wxp<700&&S.sh>0)S.sh=Math.max(0,S.sh-1);
+      else if(S.wxp>=700)S.sh=Math.min(3,S.sh+1);
+      S.wxp=0;
+    }
+    S.ld=td;
+    saveNow();
+  }
+  // health date check
+  if(S.hp.d!==td){
+    S.hp={sl:null,mo:null,gl:0,ex:[],sv:false,d:td};
+  }
+  // quest date check
+  if(S.dg.d!==td){
+    S.dg={n:0,p:false,r:false,d:td};
+  }
+}
+
+// ─── RANK FUNCTIONS ───────────────────────────────────
+
+function gR(xp){
+  for(var i=RANKS.length-1;i>=0;i--){if(xp>=RANKS[i].min)return RANKS[i]}
+  return RANKS[0];
+}
+function nR(xp){
+  for(var i=0;i<RANKS.length;i++){if(xp<RANKS[i].min)return RANKS[i]}
+  return RANKS[RANKS.length-1];
+}
+function rP(xp){
+  var cur=gR(xp),next=nR(xp);
+  if(cur===next)return 1;
+  var range=next.min-cur.min;
+  var prog=xp-cur.min;
+  return Math.min(1,prog/range);
+}
+function rankIdx(xp){
+  for(var i=RANKS.length-1;i>=0;i--){if(xp>=RANKS[i].min)return i}
+  return 0;
+}
+
+// ─── XP AWARD ─────────────────────────────────────────
+
+function awardXP(amt,dim,label){
+  var prevRank=gR(S.xp);
+  S.xp+=amt;S.txp+=amt;S.wxp+=amt;
+  if(dim&&S.dm)S.dm[dim]=(S.dm[dim]||0)+amt;
+  var newRank=gR(S.xp);
+  saveState();
+  showToast('+'+amt+' XP — '+label+' '+FUN_MSG[Math.floor(Math.random()*FUN_MSG.length)]);
+  if(newRank.g!==prevRank.g)showRankUp(newRank);
+  // dayXps
+  var td=todayStr();
+  S.dayXps[td]=(S.dayXps[td]||0)+amt;
+}
+
+// ─── TOAST ────────────────────────────────────────────
+
+function showToast(msg){
+  var w=document.getElementById('toast-wrap');
+  var t=document.createElement('div');
+  t.id='toast';t.textContent=msg;
+  w.innerHTML='';w.appendChild(t);
+}
+
+// ─── RANK-UP OVERLAY ──────────────────────────────────
+
+function showRankUp(rank){
+  var w=document.getElementById('rankup-wrap');
+  var d=document.createElement('div');
+  d.id='rankUp';
+  d.innerHTML='<div class="ru-t">R A N K U P</div><div class="ru-g" style="color:'+rank.color+'">'+rank.g+'</div><div style="font-family:Rajdhani,sans-serif;font-size:22px;color:var(--t0);margin-top:8px">'+rank.name+'</div><div style="color:var(--t2);margin-top:6px;font-size:14px">'+rank.desc+'</div><div style="color:var(--t2);font-size:12px;margin-top:20px">Tap to continue</div>';
+  d.onclick=function(){w.innerHTML=''};
+  w.innerHTML='';w.appendChild(d);
+}
+
+// ─── THEME ────────────────────────────────────────────
+
+function applyTheme(){
+  document.body.className=S.theme||'dark';
+}
+
+// ─── NAV ─────────────────────────────────────────────
+
+var NAV=[
+  {id:'home',icon:'home',label:'Home'},
+  {id:'feed',icon:'feed',label:'Feed'},
+  {id:'ai',icon:'brain',label:'AI'},
+  {id:'health',icon:'heart',label:'Health'},
+  {id:'tasks',icon:'check',label:'Tasks'},
+  {id:'stats',icon:'star',label:'Stats'},
+  {id:'library',icon:'book',label:'Library'}
+];
+
+var IC={
+  home:'<polyline points="3 9 12 2 21 9"/><polyline points="9 22 9 12 15 12 15 22"/><path d="M3 9v13h6M21 9v13h-6"/>',
+  feed:'<path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/>',
+  brain:'<path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5"/><path d="M9 6.5A2.5 2.5 0 0 0 6.5 9c0 1.3 1 2.4 2.3 2.5"/><path d="M3.5 12A2.5 2.5 0 0 0 6 14.5c.5 0 1-.1 1.4-.4"/><path d="M15 6.5A2.5 2.5 0 0 1 17.5 9c0 1.3-1 2.4-2.3 2.5"/><path d="M20.5 12A2.5 2.5 0 0 1 18 14.5c-.5 0-1-.1-1.4-.4"/>',
+  heart:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+  check:'<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+  star:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  sun:'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>',
+  moon:'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  back:'<polyline points="15 18 9 12 15 6"/>'
+};
+
+function svgIcon(name,size){
+  size=size||22;
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+IC[name]+'</svg>';
+}
+
+// ─── PAGE STATE ──────────────────────────────────────
+
+var pg='home';
+var ov=null;
+var nstModal=false;
+var tm=false; // new task modal
+var subPg=null; // article/lesson detail
+var subData=null;
+var dykText='';
+var dykLoading=false;
+var calResult=null;
+var calLoading=false;
+var calMeal=''; // preserve meal input across re-renders
+var newTaskPrio='M';
+var newTaskCat='work';
+var filterCat='Hot';
+
+// ─── RSS REFRESH STATE ───────────────────────────────
+// Simulates 30-min refresh cycle; timestamps article freshness
+var feedLastRefresh=Date.now();
+var FEED_REFRESH_MS=30*60*1000; // 30 minutes
+
+function feedRefreshAge(){
+  var ms=Date.now()-feedLastRefresh;
+  var mins=Math.floor(ms/60000);
+  if(mins<1)return 'Just now';
+  if(mins<60)return mins+'m ago';
+  return Math.floor(mins/60)+'h ago';
+}
+
+function refreshFeed(){
+  feedLastRefresh=Date.now();
+  // Reset read timestamps for re-fetched articles (simulate new content)
+  // In production this would fetch live RSS; here we reset the refresh clock
+  showToast('📡 Feed refreshed!');
+  renderPage();
+}
+
+// ─── NAVIGATION ──────────────────────────────────────
+
+function go(id){
+  pg=id;ov=null;subPg=null;subData=null;
+  nstModal=false;tm=false;
+  // Clear health calorie result when leaving health screen
+  if(id!=='health'){calResult=null;calLoading=false;}
+  renderNav();renderPage();
+  document.getElementById('page').scrollTop=0;
+  // Haptic feedback on iOS/Android
+  if(navigator.vibrate)navigator.vibrate(8);
+}
+
+function renderNav(){
+  var nav=document.getElementById('nav');
+  nav.style.display='flex';
+  var html='';
+  NAV.forEach(function(n){
+    html+='<div class="ni'+(pg===n.id?' act':'')+'" onclick="go(\''+n.id+'\')">';
+    html+='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+IC[n.icon]+'</svg>';
+    html+='<span>'+n.label+'</span></div>';
+  });
+  nav.innerHTML=html;
+}
+
+// ─── HEALTH SCORE ─────────────────────────────────────
+
+function healthScore(){
+  var s=0;
+  if(S.hp.sl==='Great')s+=20;
+  else if(S.hp.sl==='Good')s+=15;
+  else if(S.hp.sl==='Fair')s+=8;
+  else if(S.hp.sl==='Poor')s+=3;
+  if(S.hp.mo)s+=10;
+  s+=Math.round((S.hp.gl/8)*30);
+  if(S.hp.ex&&S.hp.ex.length>0)s+=25;
+  if(S.hp.sv)s+=15;
+  return Math.min(100,s);
+}
+
+function healthColor(score){
+  if(score>=70)return 'var(--accent)';
+  if(score>=40)return 'var(--warn)';
+  return 'var(--danger)';
+}
+
+// ─── GREETING ─────────────────────────────────────────
+
+function getGreeting(){
+  var h=getHour();
+  if(h>=22||h<6)return 'Night Owl 🦉';
+  if(h<12)return 'Good Morning ☀️';
+  if(h<17)return 'Good Afternoon 👋';
+  return 'Good Evening 🌙';
+}
+
+// ─── REMINDERS ────────────────────────────────────────
+
+function getReminders(){
+  var r=[];
+  if(!S.hp.sv)r.push({e:'❤️',l:'Health',pg:'health'});
+  if(S.hp.gl<4)r.push({e:'💧',l:'Water',pg:'health'});
+  if(!S.dg.p)r.push({e:'🧠',l:'Puzzle',pg:'quest'});
+  if(!S.dg.r)r.push({e:'🪞',l:'Reflect',pg:'quest'});
+  if(!S.hp.ex||S.hp.ex.length===0)r.push({e:'🏋️',l:'Exercise',pg:'health'});
+  return r;
+}
+
+// ─── RENDER PAGE ─────────────────────────────────────
+
+function renderPage(){
+  var page=document.getElementById('page');
+  // Always sync overlay-wrap — clears it when no overlay should show
+  var ovWrap=document.getElementById('overlay-wrap');
+  if(ovWrap&&!ov&&!nstModal&&!tm)ovWrap.innerHTML='';
+  var html='';
+  if(subPg==='article'){html=renderArticleDetail();page.innerHTML='<div class="fu">'+html+'</div>';addArtDetailHandlers();if(ov)renderOverlay();return;}
+  if(subPg==='lesson'){html=renderLessonDetail();page.innerHTML='<div class="fu">'+html+'</div>';if(ov)renderOverlay();return;}
+  if(subPg==='quest'){html=renderQuest();page.innerHTML='<div class="fu">'+html+'</div>';addQuestHandlers();if(ov)renderOverlay();return;}
+  if(subPg==='journal'){html=renderJournalSub();page.innerHTML='<div class="fu">'+html+'</div>';if(ov)renderOverlay();return;}
+  if(pg==='home')html=renderHome();
+  else if(pg==='feed')html=renderFeed();
+  else if(pg==='ai')html=renderAI();
+  else if(pg==='health')html=renderHealth();
+  else if(pg==='tasks')html=renderTasks();
+  else if(pg==='stats')html=renderStats();
+  else if(pg==='library')html=renderLibrary();
+  page.innerHTML='<div class="fu">'+html+'</div>';
+  addPageHandlers();
+  if(ov)renderOverlay();
+  if(nstModal)renderNstModal();
+  if(tm)renderTaskModal();
+}
+
+// ═══════════════════════════════════════════════════
+//  SCREENS
+// ═══════════════════════════════════════════════════
+
+function renderHome(){
+  var rank=gR(S.xp);var nextRank=nR(S.xp);var prog=rP(S.xp);
+  var hs=healthScore();
+  var tdTasks=S.tasks.filter(function(t){return t.done}).length;
+  var tdRead=Object.keys(S.nr||{}).length;
+  var reminders=getReminders();
+  var dnum=dayNum();var yr=getYear();
+  var qIdx=(yr*366+dnum)%100;
+  var quote=QTS[qIdx]||QTS[0];
+  var questDone=S.dg.p&&S.dg.r&&S.dg.n>=2;
+
+  var html='';
+
+  // Header
+  html+='<div class="r ac jb" style="margin-bottom:12px">';
+  html+='<div><div class="sm t1">'+getGreeting()+'</div><div class="bold" style="font-size:16px">'+esc(S.nm)+'</div></div>';
+  html+='<div class="r ac g8">';
+  html+='<div class="badge badge-a">🔥 '+(S.str||0)+'D</div>';
+  html+='<button id="theme-btn" onclick="toggleTheme()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:5px 8px;cursor:pointer;display:flex;align-items:center;color:var(--t1)">';
+  html+=S.theme==='dark'?svgIcon('sun',18):svgIcon('moon',18);
+  html+='</button></div></div>';
+
+  // Reminder strip
+  if(reminders.length>0){
+    html+='<div class="rem-scroll">';
+    reminders.forEach(function(r){
+      var click=r.pg==='quest'?'openQuestSub()':'go(\''+r.pg+'\')';
+      html+='<div class="rem nc" onclick="'+click+'">'+r.e+' '+r.l+'</div>';
+    });
+    html+='</div>';
+  }
+
+  // Rank card
+  html+='<div class="cd bp" onclick="openOv(\'rank\')" style="cursor:pointer">';
+  html+='<div class="r ac jb" style="margin-bottom:8px">';
+  html+='<div class="r ac g8"><span class="rj bold" style="font-size:34px;color:'+rank.color+';text-shadow:0 0 12px '+rank.color+'50">'+rank.g+'</span><div><div class="bold sm">'+rank.name+'</div><div class="xs t2">'+rank.desc+'</div></div></div>';
+  html+='<div style="text-align:right"><div class="rj bold" style="font-size:16px;color:var(--accent)">'+S.xp.toLocaleString()+' XP</div>';
+  if(nextRank!==rank)html+='<div class="xs t2">'+(nextRank.min-S.xp).toLocaleString()+' to '+nextRank.g+'</div>';
+  html+='</div></div>';
+  html+='<div class="bb"><div class="bf gt" style="width:'+Math.round(prog*100)+'%"></div></div>';
+  html+='</div>';
+
+  // Ghost card
+  if(S.ghost>0){
+    var beating=S.txp>=S.ghost;
+    html+='<div class="cd-sm">';
+    html+='<div class="r ac g6"><span>👻</span><span class="sm t1">Yesterday: <b>'+S.ghost+'</b> XP</span><span class="sm t1">|</span><span class="sm t1">Today: <b>'+S.txp+'</b> XP</span></div>';
+    html+='<div class="'+(beating?'ghost-win':'ghost-lose')+'">'+(beating?'Winning! 🔥':'Chase it! ⚡')+'</div>';
+    html+='</div>';
+  }
+
+  // Quest card
+  html+='<div class="cd bp'+(questDone?' glow-card':'')+'" onclick="openQuestSub()" style="cursor:pointer;margin-bottom:8px">';
+  html+='<div class="r ac jb" style="margin-bottom:10px">';
+  html+='<div class="bold">⚔️ Daily Quest</div>';
+  html+='<span class="badge '+(questDone?'badge-a':'badge-d')+'">'+(questDone?'CLEARED':'ENTER')+'</span>';
+  html+='</div>';
+  // Three gate cards in a row
+  var gates=[
+    {e:'📡',l:'Intel',done:S.dg.n>=2,sub:S.dg.n+'/2'},
+    {e:'🧠',l:'Logic',done:S.dg.p,sub:S.dg.n>=2?'Active':'Locked'},
+    {e:'🪞',l:'Inner',done:S.dg.r,sub:S.dg.p?'Active':'Locked'}
+  ];
+  html+='<div class="r g6">';
+  gates.forEach(function(g){
+    var col=g.done?'rgba(245,158,11,.35)':g.sub==='Active'?'rgba(99,102,241,.15)':'var(--grid)';
+    var bc=g.done?'rgba(245,158,11,.5)':g.sub==='Active'?'rgba(99,102,241,.3)':'var(--border)';
+    html+='<div style="flex:1;background:'+col+';border:1px solid '+bc+';border-radius:10px;padding:10px 6px;text-align:center">';
+    html+='<div style="font-size:18px;margin-bottom:4px">'+(g.done?'✅':g.e)+'</div>';
+    html+='<div class="xs bold" style="color:var(--t0)">'+g.l+'</div>';
+    html+='<div class="xs" style="color:'+(g.done?'var(--warn)':g.sub==='Active'?'var(--accent2)':'var(--t2)')+'">'+( g.done?'Done':g.sub)+'</div>';
+    html+='</div>';
+  });
+  html+='</div></div>';
+
+  // Sprint bar
+  var wpct=Math.min(1,S.wxp/700);
+  html+='<div class="cd-sm bp" onclick="openOv(\'sprint\')" style="cursor:pointer;margin-bottom:8px">';
+  html+='<div class="r ac jb" style="margin-bottom:8px">';
+  html+='<div class="sm bold">Weekly Sprint</div>';
+  html+='<div class="r g6">';
+  for(var si=0;si<3;si++){
+    html+='<span class="shld'+(si>=S.sh?' lost':'')+'">🛡️</span>';
+  }
+  html+='</div></div>';
+  html+='<div class="r ac jb xs t2" style="margin-bottom:5px"><span>'+S.wxp+' / 700 XP</span><span>'+Math.round(wpct*100)+'%</span></div>';
+  html+='<div class="bb"><div class="bf gp" style="width:'+Math.round(wpct*100)+'%"></div></div>';
+  html+='</div>';
+
+  // Score tiles
+  var openTasks=S.tasks.filter(function(t){return !t.done}).length;
+  html+='<div class="r g8 fw" style="margin-bottom:8px">';
+  html+='<div class="tile" onclick="go(\'stats\')"><div class="tile-val" style="color:var(--accent)">'+S.txp+'</div><div class="tile-lbl">Today XP</div></div>';
+  html+='<div class="tile" onclick="go(\'feed\')"><div class="tile-val" style="color:#60A5FA">'+tdRead+'</div><div class="tile-lbl">Articles</div></div>';
+  html+='<div class="tile" onclick="go(\'health\')"><div class="tile-val" style="color:'+(hs>=70?'var(--accent)':hs>=40?'var(--warn)':'var(--danger)')+'">'+hs+'</div><div class="tile-lbl">Health</div></div>';
+  html+='<div class="tile" onclick="go(\'tasks\')"><div class="tile-val" style="color:var(--purple)">'+tdTasks+'</div><div class="tile-lbl">'+(openTasks>0?'<span style="font-size:9px;color:var(--t2)">+'+openTasks+' open</span><br>':'')+'Tasks Done</div></div>';
+  html+='</div>';
+
+  // North Stars
+  var activeNst=S.nst&&S.nst.filter(function(n){return !n.done}).slice(0,2)||[];
+  if(activeNst.length>0){
+    html+='<div class="sh">🌟 North Stars</div>';
+    activeNst.forEach(function(ns){
+      html+='<div class="nst-it nc" onclick="toggleNst(\''+ns.id+'\')">';
+      html+='<div class="nst-cb">'+( ns.done?'<span style="color:white;font-size:12px">✓</span>':'' )+'</div>';
+      html+='<span class="sm f1 t0">'+esc(ns.text)+'</span>';
+      html+='<span class="xs t2">+10 XP</span>';
+      html+='</div>';
+    });
+  }
+  // North Star CTA
+  html+='<div class="cd-sm bp" onclick="openNstModal()" style="cursor:pointer;text-align:center">';
+  html+='<span class="t1 sm">🌟 Set a North Star goal</span></div>';
+
+  // DYK - daily-seeded topic
+  var dykTopics=['quantum physics','ancient history','human psychology','bizarre biology','space exploration','medieval mysteries','neuroscience','lost civilizations','extreme weather','animal intelligence','cryptography','deep ocean discoveries','volcanic geology','linguistic oddities','mathematical paradoxes','viral epidemiology','architectural wonders','economic anomalies','forensic science','AI history'];
+  var dykTopic=dykTopics[dnum%dykTopics.length];
+  html+='<div class="sh">✨ Fact of the Day</div>';
+  html+='<div class="dyk-cd">';
+  if(dykLoading){
+    html+='<div class="xs t2" style="margin-bottom:6px;text-transform:capitalize">Today: '+dykTopic+'</div>';
+    html+='<div class="dyk-load">⚡ Loading today\'s fact...</div>';
+  } else if(dykText){
+    html+='<div class="sm t0" style="line-height:1.6">'+esc(dykText)+'</div>';
+    html+='<button onclick="saveDYK()" class="btn btn-o btn-sm" style="margin-top:8px;font-size:11px">💾 Save to Library</button>';
+  } else {
+    html+='<div class="xs t2" style="margin-bottom:6px;text-transform:capitalize">Topic: '+dykTopic+'</div>';
+    html+='<div class="xs t2" style="margin-bottom:8px">Could not load today\'s fact.</div>';
+    html+='<button onclick="fetchDYK()" class="btn btn-g btn-sm">⚡ Retry</button>';
+  }
+  html+='</div>';
+
+  // Daily Quote
+  html+='<div class="sh">💭 Daily Quote</div>';
+  html+='<div class="cd-sm bp nc" onclick="goJournalQuote()" style="cursor:pointer">';
+  html+='<div class="qt-it">'+esc(quote.t)+'</div>';
+  html+='<div class="qt-au">— '+esc(quote.a)+'</div>';
+  html+='<div class="xs t2" style="margin-top:6px">💭 Tap to reflect... (+12 XP)</div>';
+  html+='</div>';
+
+  return html;
+}
+
+function renderFeed(){
+  var minsOld=Math.floor((Date.now()-feedLastRefresh)/60000);
+  var isStale=minsOld>=30;
+  var html='<div class="r ac jb" style="margin-bottom:8px">';
+  html+='<div class="bold lg">📰 Feed</div>';
+  html+='<div class="r ac g8">';
+  html+='<span class="xs" style="color:'+(isStale?'var(--warn)':'var(--t2)')+'">🔄 '+feedRefreshAge()+'</span>';
+  html+='<button onclick="refreshFeed()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:11px;color:var(--t1)">Refresh</button>';
+  html+='</div></div>';
+
+  // Stock ticker
+  html+='<div class="ticker">';
+  STOCKS.forEach(function(st){
+    html+='<a href="'+st.url+'" target="_blank" class="stk" onclick="window.open(\''+st.url+'\',\'_blank\');event.preventDefault()">';
+    html+='<div class="xs t2">'+st.name+'</div>';
+    html+='<div class="rj bold sm">'+st.val+'</div>';
+    html+='<div class="xs '+(st.up?'ac-c':'')+(st.up?'':'" style="color:var(--danger)"')+'">';
+    html+=st.chg+'</div></a>';
+  });
+  html+='</div>';
+
+  // Category filters
+  var cats=['Hot','All','BD','World','Finance','Sports','Entertainment','AI & Tech'];
+  html+='<div class="fil-scroll">';
+  cats.forEach(function(c){
+    html+='<button class="fpill'+(filterCat===c?' cpa':'')+'" onclick="setFeedCat(\''+c+'\')">'+c+'</button>';
+  });
+  html+='</div>';
+
+  // Article list
+  var filtered=NEWS.filter(function(a){
+    if(filterCat==='All')return true;
+    if(filterCat==='Hot')return a.type==='H';
+    if(filterCat==='BD')return a.type==='B';
+    if(filterCat==='World')return a.type==='W';
+    if(filterCat==='Sports')return a.type==='S';
+    if(filterCat==='Entertainment')return a.type==='E';
+    if(filterCat==='Finance')return a.type==='F';
+    if(filterCat==='AI & Tech')return a.type==='T';
+    return true;
+  });
+
+  // Article count
+  html+='<div class="xs t2" style="margin-bottom:8px">'+filtered.length+' articles • '+Object.keys(S.nr||{}).length+' read today</div>';
+
+  filtered.forEach(function(a){
+    var isRead=S.nr&&S.nr[a.id];
+    var isSaved=S.lib&&S.lib.some(function(i){return i.id===a.id});
+    var isLiked=S.nl&&S.nl[a.id];
+    var dotColor=a.type==='B'?'var(--accent)':'#60A5FA';
+    var xpEarned=calcArticleXP();
+    html+='<div class="art-cd'+(isRead?' rd':'')+'">';
+    html+='<div class="art-dot" style="background:'+dotColor+'"></div>';
+    html+='<div class="f1" onclick="openArticle(\''+a.id+'\')" style="cursor:pointer">';
+    html+='<div class="sm t0" style="line-height:1.4">'+esc(a.title)+'</div>';
+    html+='<div class="r ac jb" style="margin-top:4px">';
+    html+='<span class="xs t2">'+esc(a.src)+' • '+a.time+'</span>';
+    if(!isRead)html+='<span class="xs ac-c">+'+xpEarned+' XP</span>';
+    html+='</div></div>';
+    html+='<div class="r ac g4" style="flex-shrink:0;margin-left:6px">';
+    html+='<button onclick="toggleLike(\''+a.id+'\')" style="background:none;border:none;cursor:pointer;font-size:15px;padding:2px;color:'+(isLiked?'var(--danger)':'var(--t2)')+'">'+( isLiked?'❤️':'🤍')+'</button>';
+    html+='<button onclick="quickSave(\''+a.id+'\')" style="background:none;border:none;cursor:pointer;font-size:13px;padding:2px;color:'+(isSaved?'var(--accent)':'var(--t2)')+'">'+( isSaved?'💾':'🔖')+'</button>';
+    html+='</div></div>';
+  });
+
+  return html;
+}
+
+function calcArticleXP(){
+  var reads=S.reads||0;
+  if(reads<3)return 3;
+  if(reads<6)return 2;
+  return 1;
+}
+
+function renderAI(){
+  var rIdx=rankIdx(S.xp);
+  var maxLv=Math.max(1,Math.ceil(rIdx/3)+1);
+  var html='<div class="r ac jb" style="margin-bottom:12px"><div class="bold lg">🧠 AI Learning</div></div>';
+  html+='<div class="cd-sm" style="margin-bottom:12px"><div class="sm t1">Complete lessons to earn Analytical XP. Higher ranks unlock advanced lessons.</div></div>';
+
+  AI_LESSONS.forEach(function(lesson){
+    var prog=S.aiProg&&S.aiProg[lesson.id]||0;
+    var done=prog>=lesson.steps.length;
+    var locked=lesson.lv>maxLv;
+    html+='<div class="al-cd nc'+(done?' comp':'')+(locked?' comp':'')+'" onclick="'+(locked?'':'openLesson(\''+lesson.id+'\')')+'">';
+    html+='<div class="r ac jb" style="margin-bottom:8px">';
+    html+='<div class="r ac g8"><span style="font-size:22px">'+lesson.icon+'</span><div><div class="bold sm">'+esc(lesson.title)+'</div><div class="xs t2">Lv.'+lesson.lv+' • '+lesson.steps.length+' steps • +'+lesson.xp+' XP</div></div></div>';
+    html+='<div class="r ac g6">';
+    if(done)html+='<span>✅</span>';
+    else if(locked)html+='<span class="xs t2">🔒 Rank B+</span>';
+    else html+='<span class="badge badge-g">'+prog+'/'+lesson.steps.length+'</span>';
+    html+='</div></div>';
+    html+='<div class="lp-dots">';
+    lesson.steps.forEach(function(_,i){
+      html+='<div class="lp-dot'+(i<prog?' dn':'')+'"></div>';
+    });
+    html+='</div>';
+    html+='</div>';
+  });
+  return html;
+}
+
+function renderHealth(){
+  var hs=healthScore();
+  var hc=healthColor(hs);
+  var html='<div class="r ac jb" style="margin-bottom:12px">';
+  html+='<div class="bold lg">❤️ Health</div>';
+  html+='<button onclick="openOv(\'prefs\')" style="background:none;border:none;cursor:pointer;color:var(--t1)">'+svgIcon('gear',20)+'</button>';
+  html+='</div>';
+
+  // Health ring
+  var r=48,cx=55,cy=55,circ=2*Math.PI*r;
+  var dash=circ*(1-hs/100);
+  html+='<div class="ring-wrap"><svg width="110" height="110" viewBox="0 0 110 110">';
+  html+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="var(--border)" stroke-width="8"/>';
+  html+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+hc+'" stroke-width="8" stroke-dasharray="'+circ+'" stroke-dashoffset="'+dash+'" stroke-linecap="round" transform="rotate(-90 55 55)" style="transition:stroke-dashoffset .8s ease"/>';
+  html+='<text x="55" y="60" text-anchor="middle" font-family="Rajdhani,sans-serif" font-size="22" font-weight="700" fill="'+hc+'" opacity=".7">'+hs+'</text>';
+  html+='</svg><div class="ring-lbl t2">Health Score</div></div>';
+
+  // Sleep
+  html+='<div class="cd"><div class="lbl">😴 Sleep Quality <span style="float:right;font-size:11px;color:var(--accent)">+20 pts</span></div>';
+  html+='<div class="sleep-grid">';
+  ['Poor','Fair','Good','Great'].forEach(function(s){
+    html+='<button class="sleep-btn'+(S.hp.sl===s?' se':'')+'" onclick="setSleep(\''+s+'\')">'+s+'</button>';
+  });
+  html+='</div></div>';
+
+  // Mood
+  html+='<div class="cd"><div class="lbl">😊 Mood <span style="float:right;font-size:11px;color:var(--accent)">+10 pts</span></div>';
+  html+='<div class="mood-grid">';
+  ['😫','😞','😐','😊','🤩'].forEach(function(m){
+    html+='<button class="mood-btn'+(S.hp.mo===m?' se':'')+'" onclick="setMood(\''+m+'\')">'+m+'</button>';
+  });
+  html+='</div></div>';
+
+  // Hydration
+  html+='<div class="cd"><div class="lbl">💧 Hydration <span style="float:right;font-size:11px;color:var(--accent)">+3.75 pts/glass</span></div>';
+  html+='<div class="r fw g4">';
+  for(var gi=0;gi<8;gi++){
+    html+='<span class="gl-ic'+(gi<(S.hp.gl||0)?' fil':'')+'" onclick="setGlass('+gi+')">🥛</span>';
+  }
+  html+='<span class="xs t2 ac" style="margin-left:4px">'+(S.hp.gl||0)+'/8</span>';
+  html+='</div></div>';
+
+  // Exercise
+  var allEx=EXERCISES.filter(function(e){
+    if(S.prefs&&S.prefs.customEx&&S.prefs.customEx.length>0)return S.prefs.customEx.includes(e.id);
+    if(S.prefs&&S.prefs.goals&&S.prefs.goals.length>0)return e.goals.some(function(g){return S.prefs.goals.includes(g)});
+    return true;
+  }).slice(0,6);
+
+  html+='<div class="cd"><div class="lbl r jb">🏋️ Recommended Exercises <span style="color:var(--accent)">+3 XP each</span></div>';
+  allEx.forEach(function(ex){
+    var done=S.hp.ex&&S.hp.ex.includes(ex.id);
+    html+='<button class="ex-cb'+(done?' dn':'')+'" onclick="toggleEx(\''+ex.id+'\')" style="margin-bottom:5px">';
+    html+=ex.icon+' '+esc(ex.name)+' — '+ex.reps+(done?' ✅':'');
+    html+='</button>';
+  });
+  html+='<button onclick="openOv(\'allEx\')" class="btn btn-o btn-sm" style="margin-top:4px;font-size:11px">Show All Exercises</button>';
+  html+='</div>';
+
+  // Calorie counter
+  html+='<div class="cd"><div class="lbl">🍽️ AI Calorie Counter</div>';
+  html+='<div class="r g8">';
+  html+='<input id="meal-inp" class="inp f1" placeholder="e.g. Rice, 2 eggs, dal..." style="font-size:13px" value="'+esc(calMeal)+'" oninput="calMeal=this.value" onkeydown="if(event.key===\'Enter\')analyzeMeal()"/>';
+  html+='<button onclick="analyzeMeal()" id="cal-btn" class="btn btn-g btn-sm" style="white-space:nowrap"'+(calLoading?' disabled':'')+'>'+( calLoading?'...' : 'Analyze')+'</button></div>';
+  if(calLoading){
+    html+='<div class="cal-loading">⚡ Analyzing your meal...</div>';
+  } else if(calResult){
+    html+='<div class="r ac jb" style="margin-top:10px"><div class="bold sm" style="color:var(--accent)">~'+calResult.cal+' kcal</div><button onclick="calResult=null;calMeal=\'\';renderPage()" style="background:none;border:none;color:var(--t2);cursor:pointer;font-size:11px">✕ Clear</button></div>';
+    html+='<div class="macro-grid">';
+    html+='<div class="macro-it"><div class="macro-val">'+calResult.p+'g</div><div class="macro-lbl">Protein</div></div>';
+    html+='<div class="macro-it"><div class="macro-val">'+calResult.c+'g</div><div class="macro-lbl">Carbs</div></div>';
+    html+='<div class="macro-it"><div class="macro-val">'+calResult.f+'g</div><div class="macro-lbl">Fat</div></div>';
+    html+='<div class="macro-it"><div class="macro-val">'+calResult.fi+'g</div><div class="macro-lbl">Fiber</div></div>';
+    html+='</div>';
+  }
+  html+='</div>';
+
+  // Save check-in
+  html+='<button class="btn btn-g" onclick="saveHealth()" style="margin-bottom:8px">'+(S.hp.sv?'✅ Saved Today! (+6 XP)':'💾 Save Check-in (+6 XP)')+'</button>';
+
+  return html;
+}
+
+function renderTasks(){
+  var open=S.tasks.filter(function(t){return !t.done});
+  // Sort by priority H > M > L
+  var priOrder={H:0,M:1,L:2};
+  open.sort(function(a,b){return (priOrder[a.prio]||1)-(priOrder[b.prio]||1)});
+  var done=S.tasks.filter(function(t){return t.done}).slice(-5);
+  var html='<div class="r ac jb" style="margin-bottom:12px">';
+  html+='<div class="bold lg">✅ Tasks</div>';
+  html+='<div class="r g8">';
+  html+='<button onclick="openOv(\'import\')" style="background:none;border:1px solid var(--border);border-radius:8px;padding:5px 10px;cursor:pointer;color:var(--t1);font-size:11px">📲 Import</button>';
+  html+='<button onclick="openTaskModal()" class="btn btn-g btn-sm">+ New</button>';
+  html+='</div></div>';
+
+  if(open.length===0&&done.length===0){
+    html+='<div class="cd" style="text-align:center;padding:30px">';
+    html+='<div style="font-size:32px;margin-bottom:8px">✅</div>';
+    html+='<div class="t2 sm">No tasks yet.<br>Add your first task and start earning Professional XP!</div>';
+    html+='</div>';
+  }
+
+  if(open.length>0){
+    html+='<div class="sh">Active ('+open.length+')</div>';
+    open.forEach(function(t){
+      var cat=TASK_CATS.find(function(c){return c.id===t.cat});
+      var xpAmt=t.prio==='H'?7:t.prio==='M'?4:2;
+      html+='<div class="tsk">';
+      html+='<div class="tsk-cb" onclick="toggleTask(\''+t.id+'\')"></div>';
+      html+='<div class="f1">';
+      html+='<div class="sm t0">'+esc(t.name)+'</div>';
+      html+='<div class="r ac g6" style="margin-top:3px">';
+      if(cat)html+='<span class="xs t2">'+cat.e+' '+cat.l+'</span>';
+      html+='<span class="xs ac-c">+'+xpAmt+' XP</span>';
+      html+='</div></div>';
+      html+='<span class="pri pri-'+t.prio+'">'+t.prio+'</span>';
+      html+='<button onclick="deleteTask(\''+t.id+'\')" style="background:none;border:none;color:var(--t2);cursor:pointer;font-size:18px;padding:0 6px;line-height:1">×</button>';
+      html+='</div>';
+    });
+  }
+
+  if(done.length>0){
+    html+='<div class="sh">Completed (last 5)</div>';
+    done.forEach(function(t){
+      var cat=TASK_CATS.find(function(c){return c.id===t.cat});
+      html+='<div class="tsk dn">';
+      html+='<div class="tsk-cb ck" onclick="toggleTask(\''+t.id+'\')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>';
+      html+='<div class="f1">';
+      html+='<div class="sm t1"><s>'+esc(t.name)+'</s></div>';
+      if(cat)html+='<div class="xs t2">'+cat.e+' '+cat.l+'</div>';
+      html+='</div>';
+      html+='<span class="pri pri-'+t.prio+'">'+t.prio+'</span>';
+      html+='</div>';
+    });
+  }
+
+  return html;
+}
+
+function renderStats(){
+  var rank=gR(S.xp);var nextRank=nR(S.xp);var prog=rP(S.xp);
+  var html='<div class="bold lg" style="margin-bottom:12px">📊 Stats</div>';
+
+  // Today's summary
+  html+='<div class="r g8" style="margin-bottom:8px">';
+  html+='<div class="cd" style="flex:1;text-align:center;padding:12px;margin-bottom:0"><div class="rj bold" style="font-size:22px;color:var(--accent)">'+S.txp+'</div><div class="xs t2">Today XP</div></div>';
+  html+='<div class="cd" style="flex:1;text-align:center;padding:12px;margin-bottom:0"><div class="rj bold" style="font-size:22px;color:var(--accent2)">'+S.wxp+'</div><div class="xs t2">Week XP</div></div>';
+  html+='<div class="cd" style="flex:1;text-align:center;padding:12px;margin-bottom:0"><div class="rj bold" style="font-size:22px;color:var(--warn)">'+S.str+'</div><div class="xs t2">🔥 Streak</div></div>';
+  html+='</div>';
+
+  // Rank hero
+  html+='<div class="cd bp" onclick="openOv(\'rank\')" style="cursor:pointer;text-align:center;padding:20px">';
+  html+='<div class="rj" style="font-size:52px;font-weight:700;color:'+rank.color+';text-shadow:0 0 20px '+rank.color+'60">'+rank.g+'</div>';
+  html+='<div class="bold" style="margin-top:4px;font-size:16px">'+rank.name+'</div>';
+  html+='<div class="xs t2" style="margin-top:2px">'+rank.desc+'</div>';
+  html+='<div class="rj" style="font-size:20px;color:var(--accent);margin-top:10px;font-weight:700">'+S.xp.toLocaleString()+' XP</div>';
+  html+='<div class="bb" style="margin-top:12px"><div class="bf gt" style="width:'+Math.round(prog*100)+'%"></div></div>';
+  if(nextRank!==rank)html+='<div class="xs t2" style="margin-top:6px">'+(nextRank.min-S.xp).toLocaleString()+' XP to '+nextRank.g+' '+nextRank.name+' →</div>';
+  html+='<div class="xs t2" style="margin-top:4px">Tap for full roadmap</div>';
+  html+='</div>';
+
+  // Radar
+  html+='<div class="cd"><div class="lbl">Dimension Radar <span style="color:var(--t2);font-weight:normal;text-transform:none;letter-spacing:0">(tap a bar to view details)</span></div>';
+  html+=renderRadar();
+  html+='</div>';
+
+  // Dim bars
+  html+='<div class="sh">Dimensions</div>';
+  DIMS.forEach(function(d){
+    var dxp=S.dm&&S.dm[d.key]||0;
+    var lv=Math.max(1,Math.floor(Math.cbrt(dxp/5)));
+    var nextLvXp=Math.pow(lv+1,2)*5;
+    var thisLvXp=Math.pow(lv,2)*5;
+    var pct=Math.min(100,Math.round((dxp-thisLvXp)/(nextLvXp-thisLvXp)*100));
+    if(pct<0)pct=0;
+    html+='<div class="dim-row" onclick="openOv({dim:\''+d.key+'\'})"><span style="font-size:20px">'+d.icon+'</span>';
+    html+='<div class="f1">';
+    html+='<div class="r jb" style="margin-bottom:4px">';
+    html+='<span class="sm t0">'+d.label+'</span>';
+    html+='<span class="r ac g6"><span style="font-size:10px;color:'+d.color+'">Lv.'+lv+'</span><span class="xs t2">'+dxp.toLocaleString()+' XP</span></span>';
+    html+='</div>';
+    html+='<div class="bb"><div class="bf" style="width:'+pct+'%;background:'+d.color+'"></div></div>';
+    html+='</div></div>';
+  });
+
+  // Lifetime
+  html+='<div class="sh">Lifetime</div>';
+  html+='<div class="stat-grid">';
+  html+='<div class="stat-box"><div class="stat-n">'+(S.ad||0)+'</div><div class="stat-l">📅 Active Days</div></div>';
+  html+='<div class="stat-box"><div class="stat-n">'+(S.ta||0)+'</div><div class="stat-l">📰 Articles</div></div>';
+  html+='<div class="stat-box"><div class="stat-n">'+(S.tp||0)+'</div><div class="stat-l">🧩 Puzzles</div></div>';
+  html+='<div class="stat-box"><div class="stat-n">'+(S.tt||0)+'</div><div class="stat-l">✅ Tasks</div></div>';
+  html+='<div class="stat-box"><div class="stat-n">'+(S.tj||0)+'</div><div class="stat-l">📓 Journals</div></div>';
+  html+='<div class="stat-box"><div class="stat-n">'+(S.lib.length||0)+'</div><div class="stat-l">💾 Saved</div></div>';
+  html+='</div>';
+
+  return html;
+}
+
+function renderRadar(){
+  // Use a larger viewBox with padding so labels at all 5 corners never clip
+  var pad=36,r=65,cx=110,cy=110,size=220;
+  var vbSize=size+pad*2; // 292 viewBox, 220 render size
+  var vals=DIMS.map(function(d){return Math.min(1,(S.dm&&S.dm[d.key]||0)/500)});
+  var pts=vals.map(function(v,i){
+    var a=(i/5)*Math.PI*2-Math.PI/2;
+    return [cx+Math.cos(a)*r*v,cy+Math.sin(a)*r*v];
+  });
+  var poly=pts.map(function(p){return p[0]+','+p[1]}).join(' ');
+  var webs=[0.2,0.4,0.6,0.8,1.0].map(function(f){
+    var p=DIMS.map(function(_,i){
+      var a=(i/5)*Math.PI*2-Math.PI/2;
+      return (cx+Math.cos(a)*r*f)+','+(cy+Math.sin(a)*r*f);
+    }).join(' ');
+    return '<polygon points="'+p+'" fill="none" stroke="var(--border)" stroke-width="1"/>';
+  }).join('');
+  var axes=DIMS.map(function(_,i){
+    var a=(i/5)*Math.PI*2-Math.PI/2;
+    return '<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+Math.cos(a)*r)+'" y2="'+(cy+Math.sin(a)*r)+'" stroke="var(--border)" stroke-width="1"/>';
+  }).join('');
+  var labels=DIMS.map(function(d,i){
+    var a=(i/5)*Math.PI*2-Math.PI/2;
+    var lx=cx+Math.cos(a)*(r+26);
+    var ly=cy+Math.sin(a)*(r+26);
+    var dxp=S.dm&&S.dm[d.key]||0;
+    var lv=Math.max(1,Math.floor(Math.cbrt(dxp/5)));
+    return '<g onclick="openOv({dim:\''+d.key+'\'})" style="cursor:pointer">'
+      +'<circle cx="'+lx+'" cy="'+ly+'" r="16" fill="'+d.color+'22" stroke="'+d.color+'55" stroke-width="1.5"/>'
+      +'<text x="'+lx+'" y="'+(ly-4)+'" text-anchor="middle" dominant-baseline="middle" font-size="12">'+d.icon+'</text>'
+      +'<text x="'+lx+'" y="'+(ly+9)+'" text-anchor="middle" font-family="Rajdhani,sans-serif" font-size="9" font-weight="700" fill="'+d.color+'">'+lv+'</text>'
+      +'</g>';
+  }).join('');
+  var dots=pts.map(function(p,i){
+    if(vals[i]<0.05)return '';
+    return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="var(--accent)" stroke="var(--card)" stroke-width="1.5"/>';
+  }).join('');
+  // viewBox shifted so cx/cy is truly centered with padding
+  var vb=(cx-size/2-pad)+' '+(cy-size/2-pad)+' '+vbSize+' '+vbSize;
+  return '<div style="display:flex;justify-content:center;margin:8px 0 4px">'
+    +'<svg width="'+size+'" height="'+size+'" viewBox="'+vb+'" overflow="visible">'
+    +webs+axes
+    +'<polygon points="'+poly+'" fill="rgba(45,212,191,.15)" stroke="var(--accent)" stroke-width="2"/>'
+    +dots+labels
+    +'</svg></div>';
+}
+
+var libTab='saved'; // 'saved' or 'journal'
+
+function renderLibrary(){
+  var html='<div class="r ac jb" style="margin-bottom:12px"><div class="bold lg">📚 Library</div>';
+  html+='<div class="xs t2">'+(S.lib.length)+' saved • '+(S.jrn.length)+' entries</div></div>';
+
+  // Tab bar
+  html+='<div class="r g4" style="margin-bottom:12px">';
+  html+='<button onclick="libTab=\'saved\';renderPage()" class="cb cb-lg'+(libTab==='saved'?' se':'')+'" style="flex:1;justify-content:center">💾 Saved ('+Math.min(S.lib.length,100)+')</button>';
+  html+='<button onclick="libTab=\'journal\';renderPage()" class="cb cb-lg'+(libTab==='journal'?' se':'')+'" style="flex:1;justify-content:center">📓 Journal ('+S.jrn.length+')</button>';
+  html+='</div>';
+
+  if(libTab==='saved'){
+    if(S.lib.length===0){
+      html+='<div class="cd" style="text-align:center;padding:30px">';
+      html+='<div style="font-size:32px;margin-bottom:8px">📥</div>';
+      html+='<div class="t2 sm">Nothing saved yet.<br>Save articles, DYK facts, or complete lessons!</div>';
+      html+='</div>';
+    }
+    var libShow=S.lib.slice(-100).reverse();
+    libShow.forEach(function(item,i){
+      var realIdx=S.lib.length-1-i; // index in original array
+      html+='<div class="lib-it">';
+      html+='<div class="r ac jb" style="margin-bottom:5px">';
+      html+='<span class="badge '+(item.type==='article'?'badge-d':item.type==='dyk'?'badge-a':'badge-g')+'">'+(item.type==='article'?'📰 Article':item.type==='dyk'?'✨ DYK':'🎓 Lesson')+'</span>';
+      html+='<div class="r ac g8"><span class="xs t2">'+esc(item.date||'')+'</span>';
+      html+='<button onclick="deleteLibItem('+realIdx+')" style="background:none;border:none;color:var(--t2);cursor:pointer;font-size:15px;padding:0;line-height:1">×</button>';
+      html+='</div></div>';
+      html+='<div class="sm t0" style="line-height:1.4">'+esc(item.title||item.text||'')+'</div>';
+      if(item.src)html+='<div class="xs t2" style="margin-top:3px">'+esc(item.src)+'</div>';
+      html+='</div>';
+    });
+  } else {
+    if(S.jrn.length===0){
+      html+='<div class="cd" style="text-align:center;padding:30px">';
+      html+='<div style="font-size:32px;margin-bottom:8px">📓</div>';
+      html+='<div class="t2 sm">No journal entries yet.<br>Reflect on the daily quote or complete the quest to start!</div>';
+      html+='</div>';
+    }
+    var jrnShow=S.jrn.slice(-200).reverse();
+    jrnShow.forEach(function(j,i){
+      var realIdx=S.jrn.length-1-i;
+      html+='<div class="jrn-it">';
+      html+='<div class="r ac jb" style="margin-bottom:4px"><div class="r ac g6"><div class="date">'+esc(j.date||'')+'</div>';
+      html+='<span class="badge '+(j.type==='quest'?'badge-d':'badge-a')+'">'+(j.type==='quest'?'⚔️ Quest':'💭 Reflect')+'</span></div>';
+      html+='<button onclick="deleteJrnItem('+realIdx+')" style="background:none;border:none;color:var(--t2);cursor:pointer;font-size:15px;padding:0;line-height:1">×</button>';
+      html+='</div>';
+      if(j.prompt)html+='<div class="xs t2" style="margin:3px 0;font-style:italic">'+esc(j.prompt.substring(0,50))+(j.prompt.length>50?'...':'')+'</div>';
+      html+='<div class="body">'+esc(j.text)+'</div>';
+      html+='</div>';
+    });
+  }
+
+  return html;
+}
+
+// ─── QUEST ────────────────────────────────────────────
+
+function renderQuest(){
+  var questDone=S.dg.n>=2&&S.dg.p&&S.dg.r;
+  var gate1Done=S.dg.n>=2;
+  var gate2Done=S.dg.p;
+  var gate3Done=S.dg.r;
+  // Sequential: gate 2 only unlocks after gate 1; gate 3 only after gate 2
+  var gate2Locked=!gate1Done;
+  var gate3Locked=!gate2Done;
+
+  var html='<div class="r ac g8" style="margin-bottom:4px"><button onclick="subPg=null;renderPage()" style="background:none;border:none;cursor:pointer;color:var(--t1)">'+svgIcon('back')+'</button><div class="bold lg">⚔️ Daily Quest</div></div>';
+  html+='<div class="xs t2" style="margin-bottom:14px">Complete gates in order to earn XP across dimensions.</div>';
+
+  // ── Gate 1: Intel ──
+  html+='<div style="border:1px solid '+(gate1Done?'rgba(245,158,11,.4)':gate2Locked?'var(--border)':'var(--border)')+';border-radius:12px;padding:14px;margin-bottom:10px;background:'+(gate1Done?'rgba(245,158,11,.06)':'var(--card)')+'">';
+  html+='<div class="r ac jb" style="margin-bottom:10px">';
+  html+='<div class="r ac g8"><div style="width:32px;height:32px;border-radius:50%;background:'+(gate1Done?'rgba(245,158,11,.2)':'rgba(99,102,241,.15)')+';display:flex;align-items:center;justify-content:center;font-size:16px">📡</div>';
+  html+='<div><div class="bold sm">Gate 1 — Intel</div><div class="xs t2">+3 XP/article · +6 gate bonus · World</div></div></div>';
+  html+='<span style="padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:'+(gate1Done?'rgba(245,158,11,.2)':'rgba(99,102,241,.15)')+';color:'+(gate1Done?'var(--warn)':'var(--accent2)')+'">'+(gate1Done?'✅ CLEARED':S.dg.n+' / 2')+'</span>';
+  html+='</div>';
+  // Progress mini-bar
+  html+='<div style="height:4px;background:var(--border);border-radius:2px;margin-bottom:10px"><div style="height:100%;width:'+Math.min(100,S.dg.n/2*100)+'%;background:'+(gate1Done?'var(--warn)':'var(--accent2)')+';border-radius:2px;transition:width .4s ease"></div></div>';
+  if(gate1Done){
+    html+='<div class="xs" style="color:var(--warn)">Both articles read and quizzes passed!</div>';
+  } else {
+    html+='<div class="xs t1" style="margin-bottom:8px">Read '+(2-S.dg.n)+' more article'+(2-S.dg.n===1?'':' s')+' and answer the quiz correctly.</div>';
+    html+='<button onclick="go(\'feed\')" class="btn btn-g btn-sm" style="font-size:12px">📰 Go to Feed →</button>';
+  }
+  html+='</div>';
+
+  // ── Gate 2: Logic ──
+  html+='<div style="border:1px solid '+(gate2Done?'rgba(245,158,11,.4)':gate2Locked?'var(--border)':'var(--border)')+';border-radius:12px;padding:14px;margin-bottom:10px;background:'+(gate2Done?'rgba(245,158,11,.06)':gate2Locked?'var(--bg)':'var(--card)')+';opacity:'+(gate2Locked?.45:1)+'">';
+  html+='<div class="r ac jb" style="margin-bottom:'+(gate2Locked||gate2Done?'0':'10px')+'">';
+  html+='<div class="r ac g8"><div style="width:32px;height:32px;border-radius:50%;background:'+(gate2Done?'rgba(245,158,11,.2)':gate2Locked?'var(--grid)':'rgba(99,102,241,.15)')+';display:flex;align-items:center;justify-content:center;font-size:16px">'+(gate2Locked?'🔒':'🧠')+'</div>';
+  html+='<div><div class="bold sm">Gate 2 — Logic</div><div class="xs t2">+8 correct · +1 attempt · +6 gate · Analytical</div></div></div>';
+  html+='<span style="padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:'+(gate2Done?'rgba(245,158,11,.2)':gate2Locked?'var(--grid)':'rgba(99,102,241,.15)')+';color:'+(gate2Done?'var(--warn)':gate2Locked?'var(--t2)':'var(--accent2)')+'">'+(gate2Done?'✅ CLEARED':gate2Locked?'LOCKED':'ACTIVE')+'</span>';
+  html+='</div>';
+  if(!gate2Locked&&!gate2Done){
+    var seed=dayNum()*7919+rankIdx(S.xp)*31+13;
+    var puzzle=genPuzzle(seed);
+    html+='<div class="sm t0 bold" style="margin:10px 0 6px">'+puzzle.cat+' Challenge</div>';
+    html+='<div class="sm t1" style="white-space:pre-line;margin-bottom:10px;line-height:1.5">'+esc(puzzle.q)+'</div>';
+    puzzle.o.forEach(function(opt,i){
+      html+='<button class="po" id="popt'+i+'" onclick="answerPuzzle('+i+','+puzzle.a+')">'+(i+1)+'. '+esc(opt)+'</button>';
+    });
+  } else if(gate2Done){
+    html+='<div class="xs" style="color:var(--warn);margin-top:8px">Puzzle solved! Great analytical thinking.</div>';
+  } else {
+    html+='<div class="xs t2" style="margin-top:8px">Complete Gate 1 first.</div>';
+  }
+  html+='</div>';
+
+  // ── Gate 3: Inner ──
+  html+='<div style="border:1px solid '+(gate3Done?'rgba(245,158,11,.4)':gate3Locked?'var(--border)':'var(--border)')+';border-radius:12px;padding:14px;margin-bottom:10px;background:'+(gate3Done?'rgba(245,158,11,.06)':gate3Locked?'var(--bg)':'var(--card)')+';opacity:'+(gate3Locked?.45:1)+'">';
+  html+='<div class="r ac jb" style="margin-bottom:'+(gate3Locked||gate3Done?'0':'10px')+'">';
+  html+='<div class="r ac g8"><div style="width:32px;height:32px;border-radius:50%;background:'+(gate3Done?'rgba(245,158,11,.2)':gate3Locked?'var(--grid)':'rgba(99,102,241,.15)')+';display:flex;align-items:center;justify-content:center;font-size:16px">'+(gate3Locked?'🔒':'🪞')+'</div>';
+  html+='<div><div class="bold sm">Gate 3 — Inner</div><div class="xs t2">+15 reflection · +6 gate · Wisdom</div></div></div>';
+  html+='<span style="padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:'+(gate3Done?'rgba(245,158,11,.2)':gate3Locked?'var(--grid)':'rgba(99,102,241,.15)')+';color:'+(gate3Done?'var(--warn)':gate3Locked?'var(--t2)':'var(--accent2)')+'">'+(gate3Done?'✅ CLEARED':gate3Locked?'LOCKED':'ACTIVE')+'</span>';
+  html+='</div>';
+  if(!gate3Locked&&!gate3Done){
+    var prmpt=PROMPTS[dayNum()%12];
+    html+='<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:10px;margin:10px 0"><div class="xs t2 bold" style="margin-bottom:4px">Today\'s Prompt</div><div class="sm t0" style="font-style:italic;line-height:1.5">'+esc(prmpt)+'</div></div>';
+    html+='<textarea id="reflect-inp" class="inp" placeholder="Write your reflection (min 20 characters)..." style="min-height:90px"></textarea>';
+    html+='<button onclick="submitReflect()" class="btn btn-g" style="margin-top:8px">Submit Reflection (+15 XP) 🪞</button>';
+  } else if(gate3Done){
+    html+='<div class="xs" style="color:var(--warn);margin-top:8px">Reflection submitted today.</div>';
+  } else {
+    html+='<div class="xs t2" style="margin-top:8px">Complete Gate 2 first.</div>';
+  }
+  html+='</div>';
+
+  // ── All Done Banner ──
+  if(questDone){
+    html+='<div style="border:2px solid rgba(245,158,11,.5);border-radius:12px;padding:24px;text-align:center;animation:glow 2s infinite">';
+    html+='<div style="font-size:36px">⚔️</div>';
+    html+='<div class="rj bold" style="font-size:24px;color:var(--warn);margin-top:6px">QUEST CLEARED!</div>';
+    html+='<div class="sm t1" style="margin-top:6px">All 3 gates complete. World · Analytical · Wisdom XP earned.</div>';
+    html+='<div class="xs t2" style="margin-top:8px">Come back tomorrow for a new quest.</div>';
+    html+='</div>';
+  }
+
+  return html;
+}
+
+function renderArticleDetail(){
+  if(!subData)return '';
+  var a=subData;
+  var isRead=S.nr&&S.nr[a.id];
+  var fromFeed=pg==='feed';
+  var backLabel=fromFeed?'Feed':'Quest';
+  var html='<div class="r ac g8" style="margin-bottom:16px"><button onclick="subPg=null;subData=null;renderPage()" style="background:none;border:none;cursor:pointer;color:var(--t1)">'+svgIcon('back')+'</button><div class="bold t1">'+backLabel+'</div></div>';
+  html+='<span class="badge badge-d">'+a.cat+'</span>';
+  html+='<h2 style="font-size:16px;font-weight:700;margin:10px 0;line-height:1.4">'+esc(a.title)+'</h2>';
+  html+='<div class="xs t2" style="margin-bottom:12px">'+esc(a.src)+' • '+a.time+'</div>';
+  html+='<div class="sm t1" style="line-height:1.7;margin-bottom:16px">'+esc(a.sum)+'</div>';
+  html+='<div class="r g8" style="margin-bottom:16px">';
+  html+='<a href="'+a.url+'" target="_blank" class="btn btn-o btn-sm" style="display:inline-block;text-decoration:none;flex:1">Read Full →</a>';
+  var isSavedArt=S.lib&&S.lib.some(function(i){return i.id===a.id});
+  var isLikedArt=S.nl&&S.nl[a.id];
+  html+='<button onclick="quickSave(\''+a.id+'\')" class="btn btn-o btn-sm">'+(isSavedArt?'✅ Saved':'💾 Save')+'</button>';
+  html+='<button onclick="toggleLike(\''+a.id+'\')" style="background:none;border:1px solid var(--border);border-radius:8px;padding:8px 12px;cursor:pointer;font-size:15px">'+(isLikedArt?'❤️':'🤍')+'</button>';
+  html+='</div>';
+
+  // Quiz
+  if(a.quiz){
+    if(isRead){
+      html+='<div class="cd" style="text-align:center;padding:16px"><div class="xs ac-c">✅ Quiz completed</div></div>';
+    } else {
+      html+='<div class="cd"><div class="bold sm" style="margin-bottom:10px">📝 Comprehension Quiz</div>';
+      html+='<div class="sm t1" style="margin-bottom:10px">'+esc(a.quiz.q)+'</div>';
+      a.quiz.o.forEach(function(opt,i){
+        html+='<button class="po" id="aqopt'+i+'" onclick="answerArticleQuiz('+i+','+a.quiz.a+',\''+a.id+'\')">'+(i+1)+'. '+esc(opt)+'</button>';
+      });
+      html+='</div>';
+    }
+  }
+  return html;
+}
+
+function renderLessonDetail(){
+  if(!subData)return '';
+  var lesson=subData;
+  var prog=S.aiProg&&S.aiProg[lesson.id]||0;
+  var step=lesson.steps[prog]||lesson.steps[lesson.steps.length-1];
+  var done=prog>=lesson.steps.length;
+  var html='<div class="r ac g8" style="margin-bottom:16px"><button onclick="subPg=null;renderPage()" style="background:none;border:none;cursor:pointer;color:var(--t1)">'+svgIcon('back')+'</button><div class="bold">'+esc(lesson.title)+'</div></div>';
+  
+  // Progress dots
+  html+='<div class="lp-dots" style="margin-bottom:12px">';
+  lesson.steps.forEach(function(_,i){
+    html+='<div class="lp-dot'+(i<prog?' dn':'')+'"></div>';
+  });
+  html+='</div>';
+
+  if(done){
+    html+='<div class="cd" style="text-align:center;padding:24px"><div style="font-size:40px">🎓</div><div class="bold" style="margin-top:8px">Lesson Complete!</div><div class="sm t1 mt2">You\'ve mastered '+esc(lesson.title)+'</div></div>';
+    html+='<button onclick="subPg=null;renderPage()" class="btn btn-g" style="margin-top:12px">Back to AI Learning</button>';
+  } else {
+    html+='<div class="cd"><div class="bold sm ac-c" style="margin-bottom:8px">Step '+(prog+1)+' of '+lesson.steps.length+': '+esc(step.t)+'</div>';
+    html+='<div class="sm t1" style="line-height:1.7">'+esc(step.c)+'</div></div>';
+    html+='<button onclick="completeStep()" class="btn btn-g" style="margin-top:8px">Complete Step (+2 XP)'+((prog+1===lesson.steps.length)?' 🎓':'')+'</button>';
+  }
+  return html;
+}
+
+function renderJournalSub(){
+  var dnum=dayNum();var yr=getYear();
+  var qIdx=(yr*366+dnum)%100;
+  var quote=QTS[qIdx]||QTS[0];
+  var html='<div class="r ac g8" style="margin-bottom:16px"><button onclick="subPg=null;renderPage()" style="background:none;border:none;cursor:pointer;color:var(--t1)">'+svgIcon('back')+'</button><div class="bold">📓 Journal</div></div>';
+  html+='<div class="cd-sm dyk-cd" style="margin-bottom:12px"><div class="qt-it">'+esc(quote.t)+'</div><div class="qt-au">— '+esc(quote.a)+'</div></div>';
+  html+='<div class="lbl">Your Reflection</div>';
+  html+='<textarea id="journal-inp" class="inp" placeholder="Write at least 15 characters..." style="min-height:120px"></textarea>';
+  html+='<button onclick="submitJournal()" class="btn btn-g" style="margin-top:8px">Save Entry (+12 XP)</button>';
+  return html;
+}
+
+// ─── OVERLAYS ─────────────────────────────────────────
+
+function openOv(id){ov=id;renderPage();}
+function closeOv(){
+  ov=null;
+  var w=document.getElementById('overlay-wrap');
+  if(w)w.innerHTML='';
+  renderPage();
+}
+
+function renderOverlay(){
+  var wrap=document.getElementById('overlay-wrap');
+  if(!ov){wrap.innerHTML='';return;}
+  var inner='';
+  if(ov==='rank'){inner=renderRankOverlay();}
+  else if(ov==='sprint'){inner=renderSprintOverlay();}
+  else if(ov==='prefs'){inner=renderPrefsOverlay();}
+  else if(ov==='allEx'){inner=renderAllExOverlay();}
+  else if(ov==='import'){inner=renderImportOverlay();}
+  else if(ov&&ov.dim){inner=renderDimOverlay(ov.dim);}
+  // Outer ovl div: clicking the dimmed backdrop calls closeOv()
+  // Inner div: stopPropagation so taps inside the panel don't reach backdrop
+  // width:100% ensures the inner wrapper fills the flex container so ovl-box is full width
+  wrap.innerHTML='<div class="ovl" onclick="closeOv()"><div style="width:100%" onclick="event.stopPropagation()">'+inner+'</div></div>';
+}
+
+function closeOvIfBg(e){if(e.target===e.currentTarget)closeOv();}
+
+function renderRankOverlay(){
+  var html='<div class="ovl-box"><div class="ovl-hdr"><div class="bold">🏆 Rank Roadmap</div><button onclick="closeOv()" class="cls">×</button></div>';
+  var cur=gR(S.xp);
+  RANKS.forEach(function(r){
+    var passed=S.xp>=r.min;
+    var isCur=cur.g===r.g;
+    var isLocked=!passed&&!isCur;
+    html+='<div class="rr-row'+(isCur?' cur':isLocked?' lck':'')+'">';
+    html+='<div class="rr-grade" style="color:'+r.color+'">'+r.g+'</div>';
+    html+='<div class="f1"><div class="bold sm">'+r.name+'</div>';
+    html+='<div class="xs t2">'+r.min.toLocaleString()+' XP • '+r.desc+'</div>';
+    if(r.dR)html+='<div class="xs t2">Dim Req: '+r.dR+'+ each</div>';
+    html+='</div>';
+    if(passed)html+='<span class="xs ac-c">✅</span>';
+    else if(isCur)html+='<span class="xs ac-c" style="color:var(--warn)">👤 You</span>';
+    else html+='<span class="xs t2">🔒</span>';
+    html+='</div>';
+  });
+  html+='</div>';
+  return html;
+}
+
+function renderSprintOverlay(){
+  var td=todayStr();
+  var days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var now=new Date();
+  var weekDays=[];
+  for(var i=0;i<7;i++){
+    var d=new Date(now);var dow=now.getDay();var diff=i-((dow+6)%7);
+    d.setDate(d.getDate()+diff);
+    weekDays.push(d.toISOString().split('T')[0]);
+  }
+  var html='<div class="ovl-box"><div class="ovl-hdr"><div class="bold">🏃 Weekly Sprint</div><button onclick="closeOv()" class="cls">×</button></div>';
+  html+='<div class="r ac jb sm" style="margin-bottom:8px"><span>'+S.wxp+' / 700 XP</span><div class="r g6">';
+  for(var si=0;si<3;si++)html+='<span class="shld'+(si>=S.sh?' lost':'')+'">🛡️</span>';
+  html+='</div></div>';
+  var pct=Math.min(100,Math.round(S.wxp/700*100));
+  html+='<div class="bb" style="margin-bottom:16px"><div class="bf gp" style="width:'+pct+'%"></div></div>';
+  html+='<div class="sprint-days">';
+  weekDays.forEach(function(d,i){
+    var dxp=S.dayXps&&S.dayXps[d]||0;var isToday=d===td;
+    var pct2=Math.min(100,Math.round(dxp/100*100));
+    var r2=16,circ2=2*Math.PI*r2;
+    html+='<div style="display:flex;flex-direction:column;align-items:center;gap:4px">';
+    html+='<div class="day-ring"><svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="'+r2+'" fill="none" stroke="var(--border)" stroke-width="3"/><circle cx="18" cy="18" r="'+r2+'" fill="none" stroke="'+(isToday?'var(--accent)':'var(--accent2)')+'" stroke-width="3" stroke-dasharray="'+circ2+'" stroke-dashoffset="'+(circ2*(1-pct2/100))+'" stroke-linecap="round" transform="rotate(-90 18 18)"/></svg>';
+    html+='<div class="day-ring-lbl" style="color:'+(isToday?'var(--accent)':'var(--t1)')+'">'+dxp+'</div></div>';
+    html+='<span style="font-size:9px;color:'+(isToday?'var(--accent)':'var(--t2)')+'">'+days[i]+'</span></div>';
+  });
+  html+='</div></div>';
+  return html;
+}
+
+function renderDimOverlay(dimKey){
+  var dim=DIMS.find(function(d){return d.key===dimKey});
+  if(!dim)return '';
+  var dxp=S.dm&&S.dm[dimKey]||0;
+  var lv=Math.max(1,Math.floor(Math.cbrt(dxp/5)));
+  var html='<div class="ovl-box"><div class="ovl-hdr"><div class="bold" style="color:'+dim.color+'">'+dim.icon+' '+dim.label+'</div><button onclick="closeOv()" class="cls">×</button></div>';
+  html+='<div class="r ac jb" style="margin-bottom:8px"><span class="t1">Level '+lv+'</span><span class="rj bold" style="color:'+dim.color+'">'+dxp+' XP</span></div>';
+  html+='<div class="bb" style="margin-bottom:12px"><div class="bf" style="width:'+Math.min(100,Math.round((dxp%(lv*lv*5))/(lv*lv*5)*100))+'%;background:'+dim.color+'"></div></div>';
+  html+='<div class="cd-sm"><div class="lbl">What feeds this dimension</div>';
+  dim.feeds.forEach(function(f){html+='<div class="sm t1 r g4" style="margin-bottom:5px"><span>→</span><span>'+f+'</span></div>'});
+  html+='</div>';
+  html+='<div class="dyk-cd"><div class="sm t1" style="font-style:italic">'+esc(dim.tip)+'</div></div>';
+  html+='</div>';
+  return html;
+}
+
+function renderPrefsOverlay(){
+  var html='<div class="ovl-box"><div class="ovl-hdr"><div class="bold">⚙️ Preferences</div><button onclick="closeOv()" class="cls">×</button></div>';
+  html+='<div class="r ac g10" style="padding:10px;background:var(--bg);border-radius:10px;margin-bottom:12px">';
+  html+='<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:18px">⚡</div>';
+  html+='<div><div class="bold sm">'+esc(S.nm)+'</div>';
+  html+='<div class="xs t2">Rank: '+gR(S.xp).name+' • '+S.xp.toLocaleString()+' XP</div></div></div>';
+  html+='<div class="lbl">Professional Context</div>';
+  html+='<input id="pref-ctx-inp" class="inp" style="margin-bottom:10px" value="'+esc(S.prefs&&S.prefs.workCtx||'')+'" placeholder="Banking, Tech, Education..." oninput="prefCtxChange(this.value)"/>';
+  html+='<div class="lbl">Fitness Goals <span style="color:var(--t2);font-weight:normal;text-transform:none;letter-spacing:0">(shapes exercise recommendations)</span></div>';
+  html+='<div class="r fw g6">';
+  FIT_GOALS.forEach(function(g){
+    var sel=S.prefs&&S.prefs.goals&&S.prefs.goals.includes(g.id);
+    html+='<button class="cb'+(sel?' se':'')+'" onclick="toggleGoal(\''+g.id+'\')">'+g.i+' '+g.l+'</button>';
+  });
+  html+='</div>';
+  if(S.prefs&&S.prefs.customEx&&S.prefs.customEx.length>0){
+    html+='<div class="lbl" style="margin-top:10px">Custom Exercises ('+S.prefs.customEx.length+'/10)</div>';
+    html+='<button onclick="closeOv();openOv(\'allEx\')" class="btn btn-o btn-sm" style="font-size:11px">Edit Custom Exercises</button>';
+  }
+  html+='<button onclick="closeOv()" class="btn btn-g" style="margin-top:12px">Done ✓</button>';
+  html+='</div>';
+  return html;
+}
+
+function renderAllExOverlay(){
+  var html='<div class="ovl-box"><div class="ovl-hdr"><div class="bold">🏋️ All Exercises</div><button onclick="closeOv()" class="cls">×</button></div>';
+  html+='<div class="xs t2" style="margin-bottom:8px">Tap to add to custom workout (max 10)</div>';
+  EXERCISES.forEach(function(ex){
+    var custom=S.prefs&&S.prefs.customEx&&S.prefs.customEx.includes(ex.id);
+    html+='<div class="r ac g8" style="margin-bottom:6px;padding:8px 10px;background:var(--bg);border-radius:8px">';
+    html+='<span style="font-size:18px">'+ex.icon+'</span>';
+    html+='<div class="f1"><div class="sm t0">'+esc(ex.name)+'</div><div class="xs t2">'+ex.reps+'</div></div>';
+    html+='<button class="cb'+(custom?' se':'')+'" onclick="toggleCustomEx(\''+ex.id+'\')">'+(custom?'✅ Added':'+ Add')+'</button>';
+    html+='</div>';
+  });
+  html+='</div>';
+  return html;
+}
+
+function renderImportOverlay(){
+  var html='<div class="ovl-box"><div class="ovl-hdr"><div class="bold">📲 Import Tasks</div><button onclick="closeOv()" class="cls">×</button></div>';
+  html+='<div class="xs t1" style="margin-bottom:8px">Paste tasks below, one per line. All will be imported as Medium priority.</div>';
+  html+='<textarea id="import-inp" class="inp" placeholder="Buy groceries&#10;Call the bank&#10;Finish report..." style="min-height:120px"></textarea>';
+  html+='<button onclick="importTasks()" class="btn btn-g" style="margin-top:8px">Import Tasks</button>';
+  html+='</div>';
+  return html;
+}
+
+function renderNstModal(){
+  var wrap=document.getElementById('overlay-wrap');
+  var html='<div class="ovl" onclick="closeNstModal()"><div style="width:100%" onclick="event.stopPropagation()"><div class="ovl-box"><div class="ovl-hdr"><div class="bold">🌟 New North Star</div><button onclick="closeNstModal()" class="cls">×</button></div>';
+  html+='<div class="xs t1" style="margin-bottom:8px">Set a meaningful long-term goal to stay focused and earn +10 XP when done.</div>';
+  html+='<input id="nst-inp" class="inp" placeholder="e.g. Launch my startup by December..." onkeydown="if(event.key===\'Enter\')addNst()"/>';
+  html+='<button onclick="addNst()" class="btn btn-g" style="margin-top:8px">Set Goal 🌟</button>';
+  html+='</div></div></div>';
+  wrap.innerHTML=html;
+  setTimeout(function(){var i=document.getElementById('nst-inp');if(i)i.focus();},50);
+}
+
+function renderTaskModal(){
+  var wrap=document.getElementById('overlay-wrap');
+  var html='<div class="ovl" onclick="closeTm()"><div style="width:100%" onclick="event.stopPropagation()"><div class="ovl-box"><div class="ovl-hdr"><div class="bold">+ New Task</div><button onclick="closeTm()" class="cls">×</button></div>';
+  html+='<input id="task-inp" class="inp" placeholder="Task name..." style="margin-bottom:10px" onkeydown="if(event.key===\'Enter\')addTask()"/>';
+  html+='<div class="lbl">Category</div>';
+  html+='<div class="r fw g6" style="margin-bottom:10px">';
+  TASK_CATS.forEach(function(c){
+    html+='<button class="cb'+(newTaskCat===c.id?' se':'')+'" onclick="setTaskCat(\''+c.id+'\')">'+c.e+' '+c.l+'</button>';
+  });
+  html+='</div>';
+  html+='<div class="lbl">Priority</div>';
+  html+='<div class="prio-sel" style="margin-bottom:12px">';
+  ['H','M','L'].forEach(function(p){
+    html+='<button class="prio-btn'+(newTaskPrio===p?' se-'+p:'')+'" onclick="setTaskPrio(\''+p+'\')">'+({H:'🔴 High',M:'🟡 Medium',L:'🟢 Low'}[p])+'</button>';
+  });
+  html+='</div>';
+  html+='<button onclick="addTask()" class="btn btn-g">Add Task</button>';
+  html+='</div></div></div>';
+  wrap.innerHTML=html;
+  setTimeout(function(){var i=document.getElementById('task-inp');if(i)i.focus();},50);
+}
+
+// ─── HANDLERS ─────────────────────────────────────────
+
+function addPageHandlers(){}
+
+function addQuestHandlers(){
+  // auto-handled by onclick
+}
+
+function addArtDetailHandlers(){}
+
+function toggleTheme(){
+  S.theme=S.theme==='dark'?'light':'dark';
+  applyTheme();saveState();renderPage();
+}
+
+function openQuestSub(){subPg='quest';renderPage();}
+function goJournalQuote(){subPg='journal';renderPage();}
+
+function openArticle(id){
+  var a=NEWS.find(function(n){return n.id===id});
+  if(a){subPg='article';subData=a;renderPage();}
+}
+
+function openLesson(id){
+  var l=AI_LESSONS.find(function(a){return a.id===id});
+  if(l){subPg='lesson';subData=l;renderPage();}
+}
+
+function setFeedCat(c){filterCat=c;renderPage();}
+
+function setSleep(s){
+  var prev=S.hp.sl;S.hp.sl=(prev===s?null:s);
+  saveState();renderPage();
+}
+
+function setMood(m){
+  var prev=S.hp.mo;S.hp.mo=(prev===m?null:m);
+  saveState();renderPage();
+}
+
+function setGlass(n){
+  var cur=S.hp.gl||0;
+  if(n<cur)S.hp.gl=n;
+  else S.hp.gl=n+1;
+  S.hp.gl=Math.max(0,Math.min(8,S.hp.gl));
+  saveState();renderPage();
+}
+
+function toggleEx(id){
+  if(!S.hp.ex)S.hp.ex=[];
+  var idx=S.hp.ex.indexOf(id);
+  if(idx>-1){S.hp.ex.splice(idx,1);saveState();renderPage();}
+  else{S.hp.ex.push(id);awardXP(3,'mastery','Exercise');renderPage();}
+}
+
+function saveHealth(){
+  // Re-saveable per spec: awards XP when changes are made
+  awardXP(6,'mastery','Health check-in');
+  S.hp.sv=true;saveState();renderPage();
+}
+
+function analyzeMeal(){
+  var inp=document.getElementById('meal-inp');
+  var meal=(inp&&inp.value.trim())||calMeal.trim();
+  if(!meal){showToast('Enter a meal to analyze!');return;}
+  calMeal=meal;
+  calLoading=true;calResult=null;renderPage();
+  fetch('/api/claude',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:200,
+      system:'You are a nutrition expert. Respond ONLY with a JSON object (no markdown, no explanation) with keys: cal (number, total calories), p (number, protein grams), c (number, carb grams), f (number, fat grams), fi (number, fiber grams). No extra text.',
+      messages:[{role:'user',content:'Estimate macros for: '+meal}]
+    })
+  }).then(function(r){return r.json()}).then(function(d){
+    try{
+      var txt=d.content&&d.content[0]&&d.content[0].text||'';
+      var clean=txt.replace(/```json|```/g,'').trim();
+      calResult=JSON.parse(clean);
+    }catch(e){calResult={cal:'?',p:'?',c:'?',f:'?',fi:'?'}}
+    calLoading=false;renderPage();
+  }).catch(function(){
+    calResult={cal:'?',p:'?',c:'?',f:'?',fi:'?'};calLoading=false;renderPage();
+  });
+}
+
+function fetchDYK(){
+  if(dykLoading)return;
+  dykLoading=true;dykText='';
+  if(pg==='home')renderPage();
+  // Daily-seeded topic so each day gets a genuinely different fact category
+  var topics=['quantum physics','ancient history','human psychology','bizarre biology','space exploration','medieval mysteries','neuroscience','lost civilizations','extreme weather','animal intelligence','cryptography','deep ocean discoveries','volcanic geology','linguistic oddities','mathematical paradoxes','viral epidemiology','architectural wonders','economic anomalies','forensic science','artificial intelligence history'];
+  var topicIdx=dayNum()%topics.length;
+  var topic=topics[topicIdx];
+  fetch('/api/claude',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:200,
+      system:'You are a fascinating fact curator. Deliver surprising, counterintuitive, or little-known facts. Always start with "Did you know" and write exactly 2-3 sentences. Be specific with numbers, names, and dates. Never be vague.',
+      messages:[{role:'user',content:'Give me one mind-blowing Did You Know fact specifically about '+topic+'. Make it genuinely surprising and include a specific detail most people don\'t know.'}]
+    })
+  }).then(function(r){return r.json();}).then(function(d){
+    var txt=(d.content&&d.content[0]&&d.content[0].text)||'';
+    if(!txt||txt.length<20){throw new Error('empty');}
+    dykText=txt.trim();
+    S.dykCache=dykText;
+    S.dykDate=todayStr();
+    dykLoading=false;
+    saveState();
+    if(pg==='home')renderPage();
+  }).catch(function(){
+    dykText='';
+    dykLoading=false;
+    if(pg==='home')renderPage();
+  });
+}
+
+function prefCtxChange(val){
+  if(!S.prefs)S.prefs={goals:[],workCtx:'',customEx:[]};
+  S.prefs.workCtx=val;
+  saveState();
+}
+
+function saveDYK(){
+  if(!dykText)return;
+  S.lib.push({type:'dyk',text:dykText,date:todayStr()});
+  if(S.lib.length>100)S.lib.shift();
+  saveState();showToast('💾 Saved to Library!');
+}
+
+function saveArticle(){
+  if(!subData)return;
+  quickSave(subData.id);
+}
+
+function quickSave(artId){
+  var a=NEWS.find(function(n){return n.id===artId});
+  if(!a)return;
+  if(!S.lib)S.lib=[];
+  var exists=S.lib.find(function(i){return i.id===artId});
+  if(!exists){
+    S.lib.push({type:'article',id:artId,title:a.title,src:a.src,date:todayStr()});
+    if(S.lib.length>100)S.lib.shift();
+    saveState();showToast('💾 Saved to Library!');
+    renderPage();
+  } else {
+    showToast('Already in Library!');
+  }
+}
+
+function toggleLike(artId){
+  if(!S.nl)S.nl={};
+  if(S.nl[artId])delete S.nl[artId];
+  else S.nl[artId]=true;
+  saveState();renderPage();
+}
+
+function answerArticleQuiz(chosen,correct,artId){
+  var btns=document.querySelectorAll('[id^="aqopt"]');
+  btns.forEach(function(b,i){
+    b.disabled=true;
+    if(i===correct)b.className='po correct';
+    else if(i===chosen&&chosen!==correct)b.className='po wrong';
+  });
+  if(chosen===correct){
+    var xp=calcArticleXP();
+    if(!S.nr)S.nr={};
+    if(!S.nr[artId]){
+      S.nr[artId]=true;
+      S.reads=(S.reads||0)+1;
+      S.ta=(S.ta||0)+1;
+      if(!S.dg)S.dg={n:0,p:false,r:false,d:todayStr()};
+      S.dg.n=(S.dg.n||0)+1;
+      if(S.dg.n===2)setTimeout(function(){awardXP(6,'world','Quest Gate 1 bonus!')},600);
+      awardXP(xp,'world','Article quiz');
+    }
+    saveState();
+    // Auto-go back after correct answer
+    setTimeout(function(){subPg=null;subData=null;renderPage();},1400);
+  } else {
+    // Wrong - allow retry after brief visual feedback
+    setTimeout(function(){
+      btns.forEach(function(b){b.disabled=false;b.className='po'});
+    },1200);
+  }
+}
+
+function answerPuzzle(chosen,correct){
+  var btns=document.querySelectorAll('[id^="popt"]');
+  btns.forEach(function(b,i){
+    b.disabled=true;
+    if(i===correct)b.className='po correct';
+    else if(i===chosen&&chosen!==correct)b.className='po wrong';
+  });
+  S.tp=(S.tp||0)+1;
+  if(chosen===correct){
+    S.dg.p=true;
+    awardXP(8,'analytical','Puzzle solved');
+    setTimeout(function(){awardXP(6,'analytical','Gate 2 bonus')},700);
+  } else {
+    awardXP(1,'analytical','Puzzle attempt');
+  }
+  saveState();
+  setTimeout(function(){renderPage();},1500);
+}
+
+function submitReflect(){
+  var inp=document.getElementById('reflect-inp');
+  if(!inp||inp.value.trim().length<20){showToast('Write at least 20 characters!');return;}
+  S.dg.r=true;
+  S.jrn.push({date:todayStr(),text:inp.value.trim(),type:'quest',prompt:PROMPTS[dayNum()%12]});
+  if(S.jrn.length>200)S.jrn.shift();
+  S.tj=(S.tj||0)+1;
+  awardXP(15,'wisdom','Quest reflection');
+  awardXP(6,'wisdom','Gate 3 bonus');
+  saveState();renderPage();
+}
+
+function submitJournal(){
+  var inp=document.getElementById('journal-inp');
+  if(!inp||inp.value.trim().length<15){showToast('Write at least 15 characters!');return;}
+  var dnum=dayNum(),yr=getYear();
+  var qIdx=(yr*366+dnum)%100;
+  var quote=QTS[qIdx]||QTS[0];
+  S.jrn.push({date:todayStr(),text:inp.value.trim(),type:'quote',prompt:quote.t.substring(0,50)});
+  if(S.jrn.length>200)S.jrn.shift();
+  S.tj=(S.tj||0)+1;
+  awardXP(12,'wisdom','Journal entry');
+  saveState();subPg=null;renderPage();
+}
+
+function completeStep(){
+  if(!subData)return;
+  var lesson=subData;
+  if(!S.aiProg)S.aiProg={};
+  var prog=S.aiProg[lesson.id]||0;
+  if(prog>=lesson.steps.length)return;
+  S.aiProg[lesson.id]=prog+1;
+  awardXP(2,'analytical','AI lesson step');
+  if(S.aiProg[lesson.id]>=lesson.steps.length){
+    awardXP(lesson.xp,'analytical','Lesson complete');
+    S.lib.push({type:'lesson',title:lesson.title,date:todayStr()});
+    if(S.lib.length>100)S.lib.shift();
+  }
+  saveState();renderPage();
+}
+
+function toggleTask(id){
+  var t=S.tasks.find(function(t){return t.id===id});
+  if(!t)return;
+  if(t.done){t.done=false;saveState();renderPage();return;}
+  t.done=true;
+  var xp=t.prio==='H'?7:t.prio==='M'?4:2;
+  S.tt=(S.tt||0)+1;
+  awardXP(xp,'professional','Task done');
+  saveState();renderPage();
+}
+
+function deleteTask(id){
+  S.tasks=S.tasks.filter(function(t){return t.id!==id});
+  saveState();renderPage();
+}
+
+function deleteLibItem(idx){
+  S.lib.splice(idx,1);
+  saveState();renderPage();
+}
+
+function deleteJrnItem(idx){
+  S.jrn.splice(idx,1);
+  saveState();renderPage();
+}
+
+function openTaskModal(){tm=true;newTaskPrio='M';newTaskCat='work';renderPage();}
+function closeTm(){
+  tm=false;ov=null;
+  var w=document.getElementById('overlay-wrap');if(w)w.innerHTML='';
+  renderPage();
+}
+
+function setTaskPrio(p){newTaskPrio=p;renderPage();}
+function setTaskCat(c){newTaskCat=c;renderPage();}
+
+function addTask(){
+  var inp=document.getElementById('task-inp');
+  if(!inp||!inp.value.trim()){showToast('Enter a task name!');return;}
+  S.tasks.push({id:'t'+Date.now(),name:inp.value.trim(),cat:newTaskCat||'work',prio:newTaskPrio,done:false,created:todayStr()});
+  saveState();tm=false;renderPage();
+}
+
+function importTasks(){
+  var inp=document.getElementById('import-inp');
+  if(!inp||!inp.value.trim())return;
+  var lines=inp.value.split('\n').filter(function(l){return l.trim()});
+  lines.forEach(function(l){
+    S.tasks.push({id:'t'+Date.now()+Math.random(),name:l.trim(),cat:'personal',prio:'M',done:false,created:todayStr(),imported:true});
+  });
+  saveState();closeOv();showToast('Imported '+lines.length+' tasks!');
+}
+
+function toggleGoal(id){
+  if(!S.prefs)S.prefs={goals:[],workCtx:'',customEx:[]};
+  var idx=S.prefs.goals.indexOf(id);
+  if(idx>-1)S.prefs.goals.splice(idx,1);
+  else S.prefs.goals.push(id);
+  saveState();
+  // Re-render overlay only (not full page) to keep overlay open
+  renderOverlay();
+}
+
+function toggleCustomEx(id){
+  if(!S.prefs)S.prefs={goals:[],workCtx:'',customEx:[]};
+  if(!S.prefs.customEx)S.prefs.customEx=[];
+  var idx=S.prefs.customEx.indexOf(id);
+  if(idx>-1)S.prefs.customEx.splice(idx,1);
+  else if(S.prefs.customEx.length<10)S.prefs.customEx.push(id);
+  else{showToast('Max 10 custom exercises!');return;}
+  saveState();
+  // Re-render overlay only so All Exercises sheet stays open
+  renderOverlay();
+}
+
+function openNstModal(){nstModal=true;renderPage();}
+function closeNstModal(){
+  nstModal=false;
+  var w=document.getElementById('overlay-wrap');if(w)w.innerHTML='';
+  renderPage();
+}
+
+function addNst(){
+  var inp=document.getElementById('nst-inp');
+  if(!inp||!inp.value.trim())return;
+  if(!S.nst)S.nst=[];
+  if(S.nst.length>=20){showToast('Max 20 North Stars!');return;}
+  S.nst.push({id:'ns'+Date.now(),text:inp.value.trim(),done:false,created:todayStr()});
+  saveState();nstModal=false;renderPage();
+}
+
+function toggleNst(id){
+  var ns=S.nst&&S.nst.find(function(n){return n.id===id});
+  if(!ns)return;
+  if(ns.done){ns.done=false;saveState();renderPage();return;}
+  ns.done=true;
+  awardXP(10,'wisdom','North Star completed');
+  saveState();renderPage();
+}
+
+// ─── ESCAPE HELPER ───────────────────────────────────
+
+function esc(s){
+  if(!s)return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════════════
+//  AUTH & ONBOARDING
+// ═══════════════════════════════════════════════════
+
+function renderAuth(){
+  var app=document.getElementById('app');
+  var page=document.getElementById('page');
+  var nav=document.getElementById('nav');
+  nav.style.display='none';
+  page.innerHTML='';
+  app.innerHTML='<div class="atm-bg"></div><div id="auth-screen" class="fu"><div class="auth-icon">⚡</div><div class="logo" style="font-size:36px">LUMINA</div><div class="auth-sub">THE UNSOCIAL MEDIA</div><div style="height:16px"></div><input id="auth-inp" class="inp" style="max-width:280px;text-align:center" placeholder="Enter your name, Player" onkeydown="if(event.key===\'Enter\')doAuth()"/><button onclick="doAuth()" class="btn btn-g" style="max-width:280px;margin-top:4px">Enter Your Arena ⚡</button></div><div id="toast-wrap"></div><div id="overlay-wrap"></div><div id="rankup-wrap"></div>';
+}
+
+function doAuth(){
+  var inp=document.getElementById('auth-inp');
+  if(!inp||!inp.value.trim())return;
+  S.nm=inp.value.trim();S.on=true;S.ld=todayStr();
+  saveNow();startApp();
+}
+
+function renderOnboarding(){
+  var app=document.getElementById('app');
+  app.innerHTML='<div class="atm-bg"></div><div id="ob-screen" class="fu"><div style="text-align:center"><div style="font-size:32px">⚡</div><div class="logo" style="font-size:24px">LUMINA</div><div class="sm t2" style="margin-top:4px">Quick setup — under 30 seconds</div></div><div id="ob-inner"></div></div><div id="toast-wrap"></div><div id="overlay-wrap"></div><div id="rankup-wrap"></div>';
+  renderObStep();
+}
+
+function renderObStep(){
+  var inner=document.getElementById('ob-inner');
+  if(!inner)return;
+  var step=(!S.obStep||S.obStep===0)?0:1;
+
+  // Step indicator
+  var stepHtml='<div class="r ac jc g8" style="margin:12px 0 16px">';
+  stepHtml+='<div style="width:28px;height:4px;border-radius:2px;background:'+(step===0?'var(--accent)':'var(--accent)')+'"></div>';
+  stepHtml+='<div style="width:28px;height:4px;border-radius:2px;background:'+(step===1?'var(--accent)':'var(--border)')+'"></div>';
+  stepHtml+='<span class="xs t2">'+( step+1)+' / 2</span>';
+  stepHtml+='</div>';
+
+  if(step===0){
+    var html=stepHtml;
+    html+='<div class="cd ob-step">';
+    html+='<div class="bold" style="margin-bottom:4px;font-size:15px">🏋️ What are your fitness goals?</div>';
+    html+='<div class="xs t2" style="margin-bottom:12px">Select all that apply — shapes your exercise recommendations</div>';
+    html+='<div class="ob-goals">';
+    FIT_GOALS.forEach(function(g){
+      var sel=S.prefs&&S.prefs.goals&&S.prefs.goals.includes(g.id);
+      html+='<button class="cb cb-lg'+(sel?' se':'')+'" onclick="obToggleGoal(\''+g.id+'\')">'+g.i+' '+g.l+'</button>';
+    });
+    html+='</div>';
+    html+='<button onclick="nextObStep()" class="btn btn-g" style="margin-top:12px">Next → ('+((S.prefs&&S.prefs.goals&&S.prefs.goals.length)||0)+' selected)</button>';
+    html+='</div>';
+    inner.innerHTML=html;
+  } else {
+    var html2=stepHtml;
+    html2+='<div class="cd ob-step">';
+    html2+='<div class="bold" style="margin-bottom:4px;font-size:15px">💼 What\'s your professional context?</div>';
+    html2+='<div class="xs t2" style="margin-bottom:12px">Personalizes your AI learning lessons</div>';
+    html2+='<div class="r fw g6" style="margin-bottom:10px">';
+    ['Banking','Tech','Education','Student','Business'].forEach(function(ctx){
+      var sel=S.prefs&&S.prefs.workCtx===ctx;
+      html2+='<button class="cb cb-lg'+(sel?' se':'')+'" onclick="setObCtx(\''+ctx+'\')">'+ctx+'</button>';
+    });
+    html2+='</div>';
+    html2+='<input id="ctx-inp" class="inp" placeholder="Or type your own..." value="'+esc(S.prefs&&S.prefs.workCtx||'')+'" oninput="if(!S.prefs)S.prefs={};S.prefs.workCtx=this.value" style="margin-bottom:12px" onkeydown="if(event.key===\'Enter\')finishOb()"/>';
+    html2+='<button onclick="finishOb()" class="btn btn-g">Start Levelling ⚡</button>';
+    html2+='<button onclick="S.obStep=0;renderObStep()" class="btn btn-o" style="margin-top:8px;font-size:12px">← Back</button>';
+    html2+='</div>';
+    inner.innerHTML=html2;
+  }
+}
+
+function obToggleGoal(id){
+  if(!S.prefs)S.prefs={goals:[],workCtx:'',customEx:[]};
+  var idx=S.prefs.goals.indexOf(id);
+  if(idx>-1)S.prefs.goals.splice(idx,1);
+  else S.prefs.goals.push(id);
+  saveState();renderObStep();
+}
+
+function setObCtx(ctx){
+  if(!S.prefs)S.prefs={goals:[],workCtx:'',customEx:[]};
+  S.prefs.workCtx=ctx;saveState();renderObStep();
+}
+
+function nextObStep(){S.obStep=1;saveState();renderObStep();}
+
+function finishOb(){
+  var inp=document.getElementById('ctx-inp');
+  if(inp&&inp.value.trim())S.prefs.workCtx=inp.value.trim();
+  S.ob=true;saveNow();
+  // Rebuild app
+  document.body.innerHTML='<div class="atm-bg"></div><div id="app"><div id="page"></div><nav id="nav" style="display:none"></nav></div><div id="toast-wrap"></div><div id="overlay-wrap"></div><div id="rankup-wrap"></div>';
+  startApp();
+}
+
+// ─── APP START ────────────────────────────────────────
+
+function startApp(){
+  applyTheme();
+  if(!S.on){renderAuth();return;}
+  if(!S.ob){renderOnboarding();return;}
+  doResets();
+  // Restore cached DYK or trigger fetch — render first so page shows immediately
+  if(S.dykCache&&S.dykDate===todayStr()){
+    dykText=S.dykCache;
+  }
+  renderNav();
+  renderPage();
+  // Fetch DYK after render if not cached today
+  if(!S.dykCache||S.dykDate!==todayStr()){
+    fetchDYK();
+  }
+  // Auto-refresh feed every 30 minutes
+  setInterval(function(){
+    feedLastRefresh=Date.now();
+    if(pg==='feed')renderPage();
+  },FEED_REFRESH_MS);
+}
+
+// ─── INIT ─────────────────────────────────────────────
+
+loadState();
+startApp();
+
+// ─── PWA MANIFEST (inline) ────────────────────────────
+(function(){
+  var manifest={
+    name:'Lumina — The Unsocial Media',
+    short_name:'Lumina',
+    description:'Gamified personal intelligence PWA',
+    start_url:window.location.href,
+    display:'standalone',
+    background_color:'#080c14',
+    theme_color:'#080c14',
+    orientation:'portrait-primary',
+    icons:[
+      {src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%23080c14"/><text y="72" x="50" text-anchor="middle" font-size="60">%E2%9A%A1</text></svg>',sizes:'192x192',type:'image/svg+xml'},
+      {src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%23080c14"/><text y="72" x="50" text-anchor="middle" font-size="60">%E2%9A%A1</text></svg>',sizes:'512x512',type:'image/svg+xml'}
+    ]
+  };
+  var blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+  var url=URL.createObjectURL(blob);
+  var link=document.getElementById('manifest-link');
+  if(link)link.href=url;
+})();
+
+// ─── PWA SERVICE WORKER ───────────────────────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    var swCode=[
+      'var CACHE="lumina-v2";',
+      'self.addEventListener("install",function(e){',
+      '  self.skipWaiting();',
+      '  e.waitUntil(caches.open(CACHE).then(function(c){',
+      '    return c.addAll([self.location.href]);',
+      '  }));',
+      '});',
+      'self.addEventListener("activate",function(e){',
+      '  e.waitUntil(caches.keys().then(function(keys){',
+      '    return Promise.all(keys.filter(function(k){return k!==CACHE}).map(function(k){return caches.delete(k)}));',
+      '  }));',
+      '});',
+      'self.addEventListener("fetch",function(e){',
+      '  if(e.request.url.includes("anthropic.com"))return;',
+      '  e.respondWith(caches.match(e.request).then(function(r){',
+      '    return r||fetch(e.request).then(function(res){',
+      '      var clone=res.clone();',
+      '      caches.open(CACHE).then(function(c){c.put(e.request,clone)});',
+      '      return res;',
+      '    }).catch(function(){return caches.match(e.request)});',
+      '  }));',
+      '});'
+    ].join('\n');
+    var blob=new Blob([swCode],{type:'application/javascript'});
+    var swUrl=URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl).catch(function(){});
+  });
+}
+
+// ─── INSTALL PROMPT ───────────────────────────────────
+var deferredInstall=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();deferredInstall=e;
+  // Show install hint after 5 seconds if on mobile
+  setTimeout(function(){
+    if(deferredInstall&&S.on&&S.ob){
+      showToast('📲 Install Lumina for offline use!');
+    }
+  },5000);
+});
+</script>
+</body>
+</html>
