@@ -706,7 +706,9 @@ function defState(){
     theme:'dark',
     obStep:0,
     dykCache:'',
-    dykDate:''
+    dykDate:'',
+    psych:{drive:'',stage:'',style:'',challenge:'',ambition:'',rhythm:'',archetype:''},
+    career:{goals:[{t:'',d:90,done:false},{t:'',d:60,done:false},{t:'',d:30,done:false}],skills:[],wins:[],habits:[{l:'Review goals',done:false,d:''},{l:'1 deep-work block',done:false,d:''},{l:'Network touchpoint',done:false,d:''}]}
   };
 }
 
@@ -727,6 +729,8 @@ function loadState(){
       if(!S.aiProg)S.aiProg={};
       if(!S.dg)S.dg={n:0,p:false,r:false,d:''};
       if(!S.hp)S.hp={sl:null,mo:null,gl:0,ex:[],sv:false,d:''};
+      if(!S.psych)S.psych={drive:'',stage:'',style:'',challenge:'',ambition:'',rhythm:'',archetype:''};
+      if(!S.career)S.career={goals:[{t:'',d:90,done:false},{t:'',d:60,done:false},{t:'',d:30,done:false}],skills:[],wins:[],habits:[{l:'Review goals',done:false,d:''},{l:'1 deep-work block',done:false,d:''},{l:'Network touchpoint',done:false,d:''}]};
     }
   }catch(e){S=defState()}
 }
@@ -858,7 +862,8 @@ var NAV=[
   {id:'health',icon:'heart',label:'Health'},
   {id:'tasks',icon:'check',label:'Tasks'},
   {id:'stats',icon:'star',label:'Stats'},
-  {id:'library',icon:'book',label:'Library'}
+  {id:'career',icon:'brief',label:'Career'},
+  {id:'library',icon:'book',label:'Saved'}
 ];
 
 var IC={
@@ -872,7 +877,10 @@ var IC={
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
   sun:'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>',
   moon:'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
-  back:'<polyline points="15 18 9 12 15 6"/>'
+  back:'<polyline points="15 18 9 12 15 6"/>',
+  brief:'<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+  trophy:'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/>',
+  rocket:'<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>'
 };
 
 function svgIcon(name,size){
@@ -1004,6 +1012,7 @@ function renderPage(){
   else if(pg==='health')html=renderHealth();
   else if(pg==='tasks')html=renderTasks();
   else if(pg==='stats')html=renderStats();
+  else if(pg==='career')html=renderCareer();
   else if(pg==='library')html=renderLibrary();
   page.innerHTML='<div class="fu">'+html+'</div>';
   addPageHandlers();
@@ -1030,8 +1039,9 @@ function renderHome(){
   var html='';
 
   // Header
+  var psychArch=(S.psych&&S.psych.archetype)?' · '+S.psych.archetype:'';
   html+='<div class="r ac jb" style="margin-bottom:12px">';
-  html+='<div><div class="sm t1">'+getGreeting()+'</div><div class="bold" style="font-size:16px">'+esc(S.nm)+'</div></div>';
+  html+='<div><div class="sm t1">'+getGreeting()+esc(psychArch)+'</div><div class="bold" style="font-size:16px">'+esc(S.nm)+'</div></div>';
   html+='<div class="r ac g8">';
   html+='<div class="badge badge-a">🔥 '+(S.str||0)+'D</div>';
   html+='<button id="theme-btn" onclick="toggleTheme()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:5px 8px;cursor:pointer;display:flex;align-items:center;color:var(--t1)">';
@@ -1565,6 +1575,228 @@ function renderLibrary(){
   return html;
 }
 
+// ─── CAREER ───────────────────────────────────────────
+
+var careerAiLoading=false;
+var careerAiResult='';
+var careerSkillInp='';
+var careerWinInp='';
+
+function renderCareer(){
+  var p=S.psych||{};
+  var arch=p.archetype||'The Luminarian';
+  var career=S.career||{goals:[],skills:[],wins:[],habits:[]};
+  var careerXp=S.dm&&S.dm.professional||0;
+  var careerLv=Math.max(1,Math.floor(careerXp/150)+1);
+  var careerPct=Math.min(100,Math.round((careerXp%150)/1.5));
+
+  var ambitionLabels={leader:'Senior Leader / Executive',founder:'Founder / Entrepreneur',specialist:'Domain Expert / Specialist',changemaker:'Social Changemaker',freedom:'Autonomous / Location-Free'};
+  var challengeAdvice={
+    focus:'Block 90-minute deep-work sessions — no phone, no meetings.',
+    confidence:'Log 3 wins daily. Evidence beats imposter syndrome.',
+    procrastination:'Use the 2-minute rule: if it takes < 2 min, do it now.',
+    communication:'Record yourself presenting for 60 seconds daily.',
+    direction:'Write your 5-year vision every morning in one sentence.',
+    energy:'Protect 7–9h sleep. Output quality tracks sleep quality.'
+  };
+
+  var html='<div class="r ac jb" style="margin-bottom:12px"><div class="bold lg">💼 Career</div>';
+  if(p.archetype)html+='<span class="badge badge-d">'+esc(arch)+'</span>';
+  html+='</div>';
+
+  // Professional level
+  html+='<div class="cd" style="margin-bottom:8px">';
+  html+='<div class="r ac jb"><div class="r ac g8"><span style="font-size:20px">⚡</span><div><div class="bold sm">Professional Lv.'+careerLv+'</div><div class="xs t2">'+careerXp+' career XP earned</div></div></div>';
+  html+='<div class="rj bold" style="font-size:22px;color:var(--accent2)">'+careerPct+'%</div></div>';
+  html+='<div class="bb" style="margin-top:8px"><div class="bf gp" style="width:'+careerPct+'%;background:linear-gradient(90deg,var(--accent2),var(--purple))"></div></div>';
+  html+='<div class="xs t2" style="margin-top:6px">'+(150-careerXp%150)+' XP to Lv.'+(careerLv+1)+'</div>';
+  html+='</div>';
+
+  // North star ambition
+  if(p.ambition){
+    html+='<div class="cd-sm" style="border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.06);margin-bottom:8px">';
+    html+='<div class="xs t2 lbl">5-YEAR NORTH STAR</div>';
+    html+='<div class="sm bold t0">'+esc(ambitionLabels[p.ambition]||p.ambition)+'</div>';
+    html+='</div>';
+  }
+
+  // Achilles heel coaching
+  if(p.challenge&&challengeAdvice[p.challenge]){
+    html+='<div class="dyk-cd" style="margin-bottom:8px">';
+    html+='<div class="xs t2 lbl">YOUR ACHILLES HEEL COACHING</div>';
+    html+='<div class="sm t0">'+esc(challengeAdvice[p.challenge])+'</div>';
+    html+='</div>';
+  }
+
+  // 30/60/90 Day Goals
+  html+='<div class="sh">30 / 60 / 90 DAY GOALS</div>';
+  html+='<div class="cd" style="margin-bottom:8px">';
+  var goalLabels=['30 Days','60 Days','90 Days'];
+  var goalColors=['var(--accent)','var(--warn)','var(--accent2)'];
+  (career.goals||[]).forEach(function(g,i){
+    html+='<div style="margin-bottom:10px">';
+    html+='<div class="r ac g8" style="margin-bottom:4px">';
+    html+='<span style="font-size:11px;font-weight:700;color:'+goalColors[i]+';min-width:52px">'+goalLabels[i]+'</span>';
+    html+='<input class="inp f1" style="font-size:12px;padding:6px 10px" placeholder="Set your '+goalLabels[i]+' goal..." value="'+esc(g.t||'')+'" oninput="careerSetGoal('+i+',this.value)"/>';
+    html+='<button onclick="careerToggleGoal('+i+')" style="background:none;border:none;cursor:pointer;font-size:18px;padding:0 2px">'+(g.done?'✅':'⬜')+'</button>';
+    html+='</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+
+  // Daily Career Habits
+  html+='<div class="sh">DAILY CAREER HABITS</div>';
+  html+='<div class="cd" style="margin-bottom:8px">';
+  var today=todayStr();
+  (career.habits||[]).forEach(function(h,i){
+    var doneToday=h.done&&h.d===today;
+    html+='<div class="tsk'+(doneToday?' dn':'')+'" style="margin-bottom:5px">';
+    html+='<div class="tsk-cb'+(doneToday?' ck':'')+'" onclick="careerToggleHabit('+i+')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>';
+    html+='<span class="sm'+(doneToday?' t2':'')+'">'+esc(h.l)+'</span>';
+    html+='</div>';
+  });
+  html+='</div>';
+
+  // Skills Matrix
+  html+='<div class="sh">SKILLS MATRIX</div>';
+  html+='<div class="cd" style="margin-bottom:8px">';
+  if(!career.skills||career.skills.length===0){
+    html+='<div class="sm t2" style="text-align:center;padding:12px 0">No skills tracked yet. Add your first skill below.</div>';
+  } else {
+    career.skills.forEach(function(sk,i){
+      html+='<div style="margin-bottom:10px">';
+      html+='<div class="r ac jb" style="margin-bottom:4px"><span class="sm bold">'+esc(sk.n)+'</span>';
+      html+='<div class="r ac g6"><span class="xs t2">Lv.'+sk.lv+'</span><button onclick="careerUpSkill('+i+')" style="background:rgba(45,212,191,.15);border:1px solid var(--accent);color:var(--accent);border-radius:6px;font-size:11px;padding:2px 8px;cursor:pointer">+Level</button><button onclick="careerDelSkill('+i+')" style="background:none;border:none;color:var(--t2);cursor:pointer;font-size:14px;padding:0">×</button></div></div>';
+      html+='<div class="bb"><div class="bf gt" style="width:'+Math.min(100,sk.lv*10)+'%"></div></div>';
+      html+='</div>';
+    });
+  }
+  html+='<div class="r g8" style="margin-top:8px">';
+  html+='<input id="skill-inp" class="inp f1" style="font-size:12px;padding:8px 10px" placeholder="Add skill (e.g. Python, Leadership)..." oninput="careerSkillInp=this.value" onkeydown="if(event.key===\'Enter\')careerAddSkill()"/>';
+  html+='<button onclick="careerAddSkill()" class="btn btn-g btn-sm">Add</button>';
+  html+='</div></div>';
+
+  // Career Wins Log
+  html+='<div class="sh">WIN LOG</div>';
+  html+='<div class="cd" style="margin-bottom:8px">';
+  if(!career.wins||career.wins.length===0){
+    html+='<div class="sm t2" style="text-align:center;padding:12px 0">No wins logged yet. Every step counts — log it.</div>';
+  } else {
+    career.wins.slice(-10).reverse().forEach(function(w,i){
+      var realIdx=career.wins.length-1-i;
+      html+='<div class="r ac jb" style="padding:8px 0;border-bottom:1px solid var(--border)">';
+      html+='<div><div class="sm bold">🏆 '+esc(w.t)+'</div><div class="xs t2">'+esc(w.date)+'</div></div>';
+      html+='<button onclick="careerDelWin('+realIdx+')" style="background:none;border:none;color:var(--t2);cursor:pointer;font-size:14px;padding:0">×</button>';
+      html+='</div>';
+    });
+  }
+  html+='<div class="r g8" style="margin-top:8px">';
+  html+='<input id="win-inp" class="inp f1" style="font-size:12px;padding:8px 10px" placeholder="Log a win (e.g. Closed deal, got promoted)..." oninput="careerWinInp=this.value" onkeydown="if(event.key===\'Enter\')careerAddWin()"/>';
+  html+='<button onclick="careerAddWin()" class="btn btn-g btn-sm" style="background:linear-gradient(135deg,var(--warn),var(--coral))">Log</button>';
+  html+='</div></div>';
+
+  // AI Career Coach
+  html+='<div class="sh">AI CAREER COACH</div>';
+  html+='<div class="cd" style="margin-bottom:16px">';
+  if(careerAiLoading){
+    html+='<div class="dyk-load">⚡ Coaching in progress...</div>';
+  } else if(careerAiResult){
+    html+='<div class="sm t0" style="line-height:1.7;margin-bottom:10px">'+esc(careerAiResult)+'</div>';
+    html+='<button onclick="careerAiResult=\'\';renderPage()" class="btn btn-o btn-sm">Ask Again</button>';
+  } else {
+    html+='<div class="xs t2" style="margin-bottom:8px">Get a personalized career insight based on your Lumina profile.</div>';
+    html+='<button onclick="fetchCareerCoach()" class="btn btn-g">⚡ Get My Career Insight</button>';
+  }
+  html+='</div>';
+
+  return html;
+}
+
+function careerSetGoal(i,val){
+  if(!S.career)S.career={goals:[{t:'',d:90,done:false},{t:'',d:60,done:false},{t:'',d:30,done:false}],skills:[],wins:[],habits:[]};
+  if(!S.career.goals[i])S.career.goals[i]={t:'',d:[90,60,30][i],done:false};
+  S.career.goals[i].t=val;saveState();
+}
+
+function careerToggleGoal(i){
+  if(!S.career||!S.career.goals[i])return;
+  S.career.goals[i].done=!S.career.goals[i].done;
+  if(S.career.goals[i].done){awardXP(30,'professional');showToast('✅ Goal complete! +30 XP');}
+  saveState();renderPage();
+}
+
+function careerToggleHabit(i){
+  if(!S.career||!S.career.habits[i])return;
+  var h=S.career.habits[i];var today=todayStr();
+  if(h.done&&h.d===today){h.done=false;h.d='';}
+  else{h.done=true;h.d=today;awardXP(10,'professional');showToast('💼 Habit done! +10 XP');}
+  saveState();renderPage();
+}
+
+function careerAddSkill(){
+  var inp=document.getElementById('skill-inp');
+  var val=(inp&&inp.value.trim())||careerSkillInp.trim();
+  if(!val)return;
+  if(!S.career)S.career={goals:[],skills:[],wins:[],habits:[]};
+  S.career.skills.push({n:val,lv:1});
+  careerSkillInp='';
+  saveState();showToast('⚡ Skill added!');renderPage();
+}
+
+function careerUpSkill(i){
+  if(!S.career||!S.career.skills[i])return;
+  S.career.skills[i].lv=Math.min(10,S.career.skills[i].lv+1);
+  awardXP(15,'professional');
+  saveState();showToast('+15 XP — skill levelled!');renderPage();
+}
+
+function careerDelSkill(i){
+  if(!S.career)return;
+  S.career.skills.splice(i,1);saveState();renderPage();
+}
+
+function careerAddWin(){
+  var inp=document.getElementById('win-inp');
+  var val=(inp&&inp.value.trim())||careerWinInp.trim();
+  if(!val)return;
+  if(!S.career)S.career={goals:[],skills:[],wins:[],habits:[]};
+  S.career.wins.push({t:val,date:todayStr()});
+  careerWinInp='';
+  awardXP(20,'professional');
+  saveState();showToast('🏆 Win logged! +20 XP');renderPage();
+}
+
+function careerDelWin(i){
+  if(!S.career)return;
+  S.career.wins.splice(i,1);saveState();renderPage();
+}
+
+function fetchCareerCoach(){
+  if(careerAiLoading)return;
+  careerAiLoading=true;renderPage();
+  var p=S.psych||{};
+  var ambMap={leader:'Senior Leader / Executive',founder:'Entrepreneur / Founder',specialist:'Domain Expert',changemaker:'Social Changemaker',freedom:'Autonomous professional'};
+  var chalMap={focus:'struggles with focus and discipline',confidence:'battles confidence and self-doubt',procrastination:'tends to procrastinate',communication:'wants to improve communication',direction:'seeking clarity on career direction',energy:'dealing with burnout and low energy'};
+  var ctx='User archetype: '+(p.archetype||'professional')+'. Career stage: '+(p.stage||'building')+'. 5-year goal: '+(ambMap[p.ambition]||p.ambition||'growth')+'. Main challenge: '+(chalMap[p.challenge]||p.challenge||'focus')+'. Professional field: '+((S.prefs&&S.prefs.workCtx)||'general')+'. Skills: '+((S.career&&S.career.skills||[]).map(function(s){return s.n;}).join(', ')||'none listed')+'.';
+  fetch('/api/claude',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:250,
+      system:'You are a sharp, direct career coach. Give 1 powerful, specific, actionable insight. No fluff. 3-4 sentences max. Address the user by their archetype. Start with a bold statement.',
+      messages:[{role:'user',content:'Give me a targeted career insight based on my profile: '+ctx}]
+    })
+  }).then(function(r){return r.json();}).then(function(d){
+    var txt=(d.content&&d.content[0]&&d.content[0].text)||'';
+    if(!txt){throw new Error('empty');}
+    careerAiResult=txt.trim();careerAiLoading=false;
+    awardXP(5,'professional');renderPage();
+  }).catch(function(){
+    careerAiResult='Could not reach coach — check connection.';careerAiLoading=false;renderPage();
+  });
+}
+
 // ─── QUEST ────────────────────────────────────────────
 
 function renderQuest(){
@@ -1992,10 +2224,19 @@ function fetchDYK(){
   if(dykLoading)return;
   dykLoading=true;dykText='';
   if(pg==='home')renderPage();
-  // Daily-seeded topic so each day gets a genuinely different fact category
+  // Daily-seeded topic — personalized by psych style when available
   var topics=['quantum physics','ancient history','human psychology','bizarre biology','space exploration','medieval mysteries','neuroscience','lost civilizations','extreme weather','animal intelligence','cryptography','deep ocean discoveries','volcanic geology','linguistic oddities','mathematical paradoxes','viral epidemiology','architectural wonders','economic anomalies','forensic science','artificial intelligence history'];
-  var topicIdx=dayNum()%topics.length;
-  var topic=topics[topicIdx];
+  var styleTopics={
+    analytical:['mathematical paradoxes','cryptography','neuroscience','economic anomalies','artificial intelligence history'],
+    creative:['architectural wonders','linguistic oddities','ancient history','bizarre biology','medieval mysteries'],
+    relational:['human psychology','viral epidemiology','animal intelligence','lost civilizations','economic anomalies'],
+    pragmatic:['volcanic geology','extreme weather','forensic science','space exploration','deep ocean discoveries']
+  };
+  var psychStyle=(S.psych&&S.psych.style)||'';
+  var pool=(psychStyle&&styleTopics[psychStyle])||topics;
+  var topicIdx=dayNum()%pool.length;
+  var topic=pool[topicIdx];
+  var psychCtx=psychStyle?(' Tailor the fact slightly toward a '+psychStyle+' mindset.'):'';
   fetch('/api/claude',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -2003,7 +2244,7 @@ function fetchDYK(){
       model:'claude-sonnet-4-20250514',
       max_tokens:200,
       system:'You are a fascinating fact curator. Deliver surprising, counterintuitive, or little-known facts. Always start with "Did you know" and write exactly 2-3 sentences. Be specific with numbers, names, and dates. Never be vague.',
-      messages:[{role:'user',content:'Give me one mind-blowing Did You Know fact specifically about '+topic+'. Make it genuinely surprising and include a specific detail most people don\'t know.'}]
+      messages:[{role:'user',content:'Give me one mind-blowing Did You Know fact specifically about '+topic+'.'+psychCtx+' Make it genuinely surprising and include a specific detail most people don\'t know.'}]
     })
   }).then(function(r){return r.json();}).then(function(d){
     var txt=(d.content&&d.content[0]&&d.content[0].text)||'';
@@ -2284,49 +2525,161 @@ function renderOnboarding(){
   renderObStep();
 }
 
+// ─── PSYCHOANALYSIS STEPS ────────────────────────────
+var PSYCH_STEPS=[
+  {
+    key:'drive',q:'What is your primary force in life?',sub:'This shapes everything Lumina serves you.',
+    opts:[
+      {v:'achievement',i:'🚀',l:'Achievement','d':'I push limits and exceed every expectation'},
+      {v:'impact',i:'🤝',l:'Impact','d':'I want to make a real difference for others'},
+      {v:'creation',i:'🎨',l:'Creation','d':'I express, build, and bring new things to life'},
+      {v:'mastery',i:'🌱',l:'Mastery','d':'I learn deeply and grow without stopping'}
+    ]
+  },
+  {
+    key:'stage',q:'Where are you in your journey?',sub:'Your current chapter defines your next chapter.',
+    opts:[
+      {v:'student',i:'🎓',l:'Student / Just Starting','d':'< 2 years — building foundations'},
+      {v:'builder',i:'🌱',l:'Builder','d':'2–7 years — figuring out my path'},
+      {v:'rising',i:'🔥',l:'Rising Fast','d':'7–15 years — accelerating hard'},
+      {v:'established',i:'🏆',l:'Established','d':'15+ years — operating at mastery'},
+      {v:'pivot',i:'🔄',l:'Reinventing','d':'Pivoting — new chapter, new identity'}
+    ]
+  },
+  {
+    key:'style',q:'How does your mind naturally work?',sub:'Your cognitive style determines how Lumina teaches you.',
+    opts:[
+      {v:'analytical',i:'🧠',l:'Analytical','d':'I need data, logic, and systems'},
+      {v:'creative',i:'🎨',l:'Creative','d':'I think in possibilities and intuition'},
+      {v:'relational',i:'🤝',l:'Relational','d':'I lead through people and empathy'},
+      {v:'pragmatic',i:'🔨',l:'Pragmatic','d':'I focus on execution and results'}
+    ]
+  },
+  {
+    key:'challenge',q:'What is your Achilles Heel right now?',sub:'Honest answer = honest guidance.',
+    opts:[
+      {v:'focus',i:'🎯',l:'Focus & Discipline','d':'I get distracted and lose momentum'},
+      {v:'confidence',i:'😰',l:'Confidence & Anxiety','d':'Self-doubt slows me down'},
+      {v:'procrastination',i:'🦥',l:'Procrastination','d':'I delay what matters most'},
+      {v:'communication',i:'🗣️',l:'Communication','d':'I struggle to express and connect'},
+      {v:'direction',i:'💡',l:'Clarity & Direction','d':'I know I want more — but what?'},
+      {v:'energy',i:'⚡',l:'Energy & Burnout','d':'I run low before the finish line'}
+    ]
+  },
+  {
+    key:'ambition',q:'Where do you want to be in 5 years?',sub:'Your north star shapes your daily game.',
+    opts:[
+      {v:'leader',i:'💼',l:'Senior Leader / Executive','d':'Lead teams and shape strategy'},
+      {v:'founder',i:'🚀',l:'Founder / Entrepreneur','d':'Build something of my own'},
+      {v:'specialist',i:'🎯',l:'Domain Expert / Specialist','d':'Become the go-to in my field'},
+      {v:'changemaker',i:'🌍',l:'Social Changemaker','d':'Create meaningful impact at scale'},
+      {v:'freedom',i:'🆓',l:'Location-Free / Autonomous','d':'Work on my own terms, anywhere'}
+    ]
+  },
+  {
+    key:'rhythm',q:'When are you at peak performance?',sub:'Lumina schedules content around your natural energy.',
+    opts:[
+      {v:'dawn',i:'🌅',l:'Dawn (5–9am)','d':'I\'m sharp before the world wakes up'},
+      {v:'morning',i:'☀️',l:'Morning (9am–1pm)','d':'I hit my stride in the AM'},
+      {v:'afternoon',i:'🌆',l:'Afternoon (1–6pm)','d':'I warm up and peak mid-day'},
+      {v:'night',i:'🌙',l:'Night Owl (6pm+)','d':'I come alive when it gets quiet'}
+    ]
+  },
+  {
+    key:'_fitness',q:'What are your fitness goals?',sub:'Shapes your daily exercise recommendations — pick all that apply.',
+    multi:true
+  },
+  {
+    key:'_work',q:'What is your professional field?',sub:'Personalizes your AI learning curriculum.',
+    text:true,
+    opts:[
+      {v:'Banking',i:'🏦',l:'Banking & Finance'},
+      {v:'Tech',i:'💻',l:'Tech / Software'},
+      {v:'Education',i:'📚',l:'Education'},
+      {v:'Student',i:'🎓',l:'Student'},
+      {v:'Business',i:'📊',l:'Business'},
+      {v:'Healthcare',i:'🏥',l:'Healthcare'},
+      {v:'Creative',i:'🎨',l:'Creative / Media'},
+      {v:'Law',i:'⚖️',l:'Law & Government'}
+    ]
+  }
+];
+
+var ARCHETYPES={
+  achievement:{creative:'The Visionary Builder',analytical:'The Precision Achiever',relational:'The Inspiring Leader',pragmatic:'The Relentless Executor'},
+  impact:{creative:'The Change Artist',analytical:'The Systems Changer',relational:'The Connector Champion',pragmatic:'The Ground-Level Hero'},
+  creation:{creative:'The Pure Creator',analytical:'The Structured Innovator',relational:'The Collaborative Artist',pragmatic:'The Maker'},
+  mastery:{creative:'The Renaissance Mind',analytical:'The Deep Diver',relational:'The Wisdom Sharer',pragmatic:'The Craftsman'}
+};
+
+function psychArchetype(){
+  var p=S.psych||{};
+  var d=p.drive||'mastery';var s=p.style||'analytical';
+  return (ARCHETYPES[d]&&ARCHETYPES[d][s])||'The Luminarian';
+}
+
 function renderObStep(){
   var inner=document.getElementById('ob-inner');
   if(!inner)return;
-  var step=(!S.obStep||S.obStep===0)?0:1;
+  var step=S.obStep||0;
+  var totalSteps=PSYCH_STEPS.length;
 
-  // Step indicator
-  var stepHtml='<div class="r ac jc g8" style="margin:12px 0 16px">';
-  stepHtml+='<div style="width:28px;height:4px;border-radius:2px;background:'+(step===0?'var(--accent)':'var(--accent)')+'"></div>';
-  stepHtml+='<div style="width:28px;height:4px;border-radius:2px;background:'+(step===1?'var(--accent)':'var(--border)')+'"></div>';
-  stepHtml+='<span class="xs t2">'+( step+1)+' / 2</span>';
+  // Progress bar
+  var pct=Math.round((step/totalSteps)*100);
+  var stepHtml='<div style="margin:10px 0 18px">';
+  stepHtml+='<div class="r ac jb" style="margin-bottom:6px"><span class="xs t2">Step '+(step+1)+' of '+totalSteps+'</span><span class="xs t2">'+pct+'%</span></div>';
+  stepHtml+='<div class="bb"><div class="bf gt" style="width:'+pct+'%"></div></div>';
   stepHtml+='</div>';
 
-  if(step===0){
-    var html=stepHtml;
-    html+='<div class="cd ob-step">';
-    html+='<div class="bold" style="margin-bottom:4px;font-size:15px">🏋️ What are your fitness goals?</div>';
-    html+='<div class="xs t2" style="margin-bottom:12px">Select all that apply — shapes your exercise recommendations</div>';
+  var cfg=PSYCH_STEPS[step];
+  if(!cfg)return;
+
+  var html=stepHtml;
+  html+='<div class="cd ob-step">';
+  html+='<div class="bold" style="margin-bottom:4px;font-size:16px">'+esc(cfg.q)+'</div>';
+  html+='<div class="xs t2" style="margin-bottom:14px">'+esc(cfg.sub)+'</div>';
+
+  if(cfg.multi){
+    // Fitness multi-select
     html+='<div class="ob-goals">';
     FIT_GOALS.forEach(function(g){
       var sel=S.prefs&&S.prefs.goals&&S.prefs.goals.includes(g.id);
       html+='<button class="cb cb-lg'+(sel?' se':'')+'" onclick="obToggleGoal(\''+g.id+'\')">'+g.i+' '+g.l+'</button>';
     });
     html+='</div>';
-    html+='<button onclick="nextObStep()" class="btn btn-g" style="margin-top:12px">Next → ('+((S.prefs&&S.prefs.goals&&S.prefs.goals.length)||0)+' selected)</button>';
-    html+='</div>';
-    inner.innerHTML=html;
-  } else {
-    var html2=stepHtml;
-    html2+='<div class="cd ob-step">';
-    html2+='<div class="bold" style="margin-bottom:4px;font-size:15px">💼 What\'s your professional context?</div>';
-    html2+='<div class="xs t2" style="margin-bottom:12px">Personalizes your AI learning lessons</div>';
-    html2+='<div class="r fw g6" style="margin-bottom:10px">';
-    ['Banking','Tech','Education','Student','Business'].forEach(function(ctx){
-      var sel=S.prefs&&S.prefs.workCtx===ctx;
-      html2+='<button class="cb cb-lg'+(sel?' se':'')+'" onclick="setObCtx(\''+ctx+'\')">'+ctx+'</button>';
+    html+='<button onclick="nextObStep()" class="btn btn-g" style="margin-top:14px">Continue → ('+(((S.prefs&&S.prefs.goals)||[]).length)+' selected)</button>';
+  } else if(cfg.text){
+    // Field selector + custom input
+    html+='<div class="r fw g6" style="margin-bottom:10px">';
+    cfg.opts.forEach(function(o){
+      var sel=S.prefs&&S.prefs.workCtx===o.v;
+      html+='<button class="cb cb-lg'+(sel?' se':'')+'" onclick="setObCtx(\''+esc(o.v)+'\')">'+o.i+' '+o.l+'</button>';
     });
-    html2+='</div>';
-    html2+='<input id="ctx-inp" class="inp" placeholder="Or type your own..." value="'+esc(S.prefs&&S.prefs.workCtx||'')+'" oninput="if(!S.prefs)S.prefs={};S.prefs.workCtx=this.value" style="margin-bottom:12px" onkeydown="if(event.key===\'Enter\')finishOb()"/>';
-    html2+='<button onclick="finishOb()" class="btn btn-g">Start Levelling ⚡</button>';
-    html2+='<button onclick="S.obStep=0;renderObStep()" class="btn btn-o" style="margin-top:8px;font-size:12px">← Back</button>';
-    html2+='</div>';
-    inner.innerHTML=html2;
+    html+='</div>';
+    html+='<input id="ctx-inp" class="inp" placeholder="Or type your field..." value="'+esc((S.prefs&&S.prefs.workCtx)||'')+'" oninput="if(!S.prefs)S.prefs={};S.prefs.workCtx=this.value" style="margin-bottom:12px" onkeydown="if(event.key===\'Enter\')nextObStep()"/>';
+    html+='<button onclick="nextObStep()" class="btn btn-g">Finalize My Profile ⚡</button>';
+  } else {
+    // Single-choice
+    cfg.opts.forEach(function(o){
+      var sel=(S.psych&&S.psych[cfg.key])===o.v;
+      html+='<button class="po'+(sel?' correct':'')+'" onclick="obSetPsych(\''+cfg.key+'\',\''+o.v+'\')">';
+      html+='<span style="font-size:18px">'+o.i+'</span> <strong>'+esc(o.l)+'</strong>';
+      if(o.d)html+='<div class="xs t2" style="margin-top:2px">'+esc(o.d)+'</div>';
+      html+='</button>';
+    });
+    var nxDisabled=!(S.psych&&S.psych[cfg.key]);
+    html+='<button onclick="nextObStep()" class="btn btn-g" style="margin-top:8px'+(nxDisabled?';opacity:.5;cursor:not-allowed':'')+'"'+(nxDisabled?' disabled':'')+'>Continue →</button>';
   }
+
+  if(step>0)html+='<button onclick="prevObStep()" class="btn btn-o" style="margin-top:8px;font-size:12px">← Back</button>';
+  html+='</div>';
+  inner.innerHTML=html;
+}
+
+function obSetPsych(key,val){
+  if(!S.psych)S.psych={drive:'',stage:'',style:'',challenge:'',ambition:'',rhythm:'',archetype:''};
+  S.psych[key]=val;
+  saveState();renderObStep();
 }
 
 function obToggleGoal(id){
@@ -2342,13 +2695,62 @@ function setObCtx(ctx){
   S.prefs.workCtx=ctx;saveState();renderObStep();
 }
 
-function nextObStep(){S.obStep=1;saveState();renderObStep();}
+function prevObStep(){if(S.obStep>0){S.obStep--;saveState();renderObStep();}}
+
+function nextObStep(){
+  var step=S.obStep||0;
+  var cfg=PSYCH_STEPS[step];
+  // Validation for single-choice steps
+  if(cfg&&!cfg.multi&&!cfg.text&&!(S.psych&&S.psych[cfg.key])){
+    showToast('Please select an option');return;
+  }
+  if(step>=PSYCH_STEPS.length-1){
+    finishOb();
+  } else {
+    S.obStep=step+1;saveState();renderObStep();
+  }
+}
 
 function finishOb(){
   var inp=document.getElementById('ctx-inp');
-  if(inp&&inp.value.trim())S.prefs.workCtx=inp.value.trim();
+  if(inp&&inp.value.trim()){if(!S.prefs)S.prefs={};S.prefs.workCtx=inp.value.trim();}
+  if(!S.psych)S.psych={drive:'',stage:'',style:'',challenge:'',ambition:'',rhythm:'',archetype:''};
+  S.psych.archetype=psychArchetype();
   S.ob=true;saveNow();
-  // Rebuild app
+  showPsychResult();
+}
+
+function showPsychResult(){
+  var app=document.getElementById('app');
+  var p=S.psych||{};
+  var arch=p.archetype||'The Luminarian';
+  var driveMap={achievement:'🚀 Achievement',impact:'🤝 Impact',creation:'🎨 Creation',mastery:'🌱 Mastery'};
+  var challengeMap={focus:'🎯 Focus & Discipline',confidence:'😰 Confidence',procrastination:'🦥 Procrastination',communication:'🗣️ Communication',direction:'💡 Clarity',energy:'⚡ Energy'};
+  var ambitionMap={leader:'💼 Senior Leader',founder:'🚀 Founder',specialist:'🎯 Domain Expert',changemaker:'🌍 Changemaker',freedom:'🆓 Autonomous'};
+  var rhythmMap={dawn:'🌅 Dawn',morning:'☀️ Morning',afternoon:'🌆 Afternoon',night:'🌙 Night Owl'};
+
+  app.innerHTML='<div class="atm-bg"></div><div id="psych-result" style="display:flex;flex-direction:column;align-items:center;padding:30px 20px;gap:0;min-height:100%;position:relative;z-index:1;overflow-y:auto"><div style="text-align:center;margin-bottom:20px"><div style="font-size:48px;margin-bottom:8px">⚡</div><div class="logo" style="font-size:28px">LUMINA DNA</div><div class="xs t2" style="letter-spacing:2px;margin-top:4px">PSYCHOANALYSIS COMPLETE</div></div>'
+  +'<div class="cd" style="width:100%;max-width:380px;border:1px solid var(--accent);background:rgba(45,212,191,.06);margin-bottom:12px;text-align:center">'
+  +'<div class="xs t2 lbl">YOUR ARCHETYPE</div>'
+  +'<div class="logo" style="font-size:22px;margin:6px 0">'+esc(arch)+'</div>'
+  +'<div class="xs t2">Lumina has calibrated itself to your profile</div>'
+  +'</div>'
+  +'<div class="cd" style="width:100%;max-width:380px;margin-bottom:12px">'
+  +'<div class="lbl">YOUR LUMINA PROFILE</div>'
+  +'<div class="r ac g8" style="margin-bottom:6px"><span style="font-size:14px">⚡</span><span class="sm t0"><strong>Core Drive:</strong> '+(driveMap[p.drive]||'—')+'</span></div>'
+  +'<div class="r ac g8" style="margin-bottom:6px"><span style="font-size:14px">🎯</span><span class="sm t0"><strong>Challenge:</strong> '+(challengeMap[p.challenge]||'—')+'</span></div>'
+  +'<div class="r ac g8" style="margin-bottom:6px"><span style="font-size:14px">🌟</span><span class="sm t0"><strong>5-Year Vision:</strong> '+(ambitionMap[p.ambition]||'—')+'</span></div>'
+  +'<div class="r ac g8"><span style="font-size:14px">⏰</span><span class="sm t0"><strong>Peak Time:</strong> '+(rhythmMap[p.rhythm]||'—')+'</span></div>'
+  +'</div>'
+  +'<div class="cd" style="width:100%;max-width:380px;margin-bottom:20px;background:rgba(99,102,241,.06);border-color:var(--accent2)">'
+  +'<div class="lbl">LUMINA WILL NOW</div>'
+  +'<div class="sm t1" style="line-height:1.8">✦ Curate facts & puzzles to your cognitive style<br>✦ Surface career content for your ambition track<br>✦ Time your hardest challenges for your peak hours<br>✦ Coach you through your specific Achilles Heel<br>✦ Adapt difficulty as you grow</div>'
+  +'</div>'
+  +'<button onclick="launchApp()" class="btn btn-g" style="width:100%;max-width:380px;font-size:15px;padding:15px">Enter Your Arena ⚡</button>'
+  +'</div><div id="toast-wrap"></div><div id="overlay-wrap"></div><div id="rankup-wrap"></div>';
+}
+
+function launchApp(){
   document.body.innerHTML='<div class="atm-bg"></div><div id="app"><div id="page"></div><nav id="nav" style="display:none"></nav></div><div id="toast-wrap"></div><div id="overlay-wrap"></div><div id="rankup-wrap"></div>';
   startApp();
 }
