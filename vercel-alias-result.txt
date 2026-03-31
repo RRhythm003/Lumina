@@ -1,1 +1,14 @@
-SUCCESS: https://lumina-app.vercel.app
+
+[lumina-app.vercel.app]: {"error":{"code":"not_found","message":"Not Found"}}
+[getlumina.vercel.app]: {"error":{"code":"not_found","message":"Not Found"}}
+[lumina-pwa.vercel.app]: {"error":{"code":"not_found","message":"Not Found"}}
+[thelumina.vercel.app]: {"error":{"code":"not_found","message":"Not Found"}}
+[lumina-ai.vercel.app]: {"error":{"code":"not_found","message":"Not Found"}}
+[lumina-self-growth.vercel.app]: {"error":{"code":"not_found","message":"Not Found"}}
+[luminaapp.vercel.app]: {"error":{"code":"not_found","message":"Not Found"}}
+[lumina-unsocial.vercel.app]: {"error":{"code":"not_found","message":"Not Found"}}
+[lumina-growth.vercel.app]: {"error":{"code":"not_found","message":"Not Found"}}
+[my-lumina.vercel.app]: {"error":{"code":"not_found","message":"Not Found"}}
+[lumina-life.vercel.app]: {"error":{"code":"not_found","message":"Not Found"}}
+[lumina-lite.vercel.app]: {"error":{"code":"not_found","message":"Not Found"}}
+ALL_FAILED - see errors above
