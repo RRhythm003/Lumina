@@ -15,116 +15,110 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Find project and latest deployment via Vercel API
-        id: vercel
+      - name: Find project, deploy fresh, set alias
         run: |
-          set -e
+          set +e
           P1="dmNwXzNxSnFLNkJjY3NCTHdYZ3VlYXNNc0xBTmZo"
           P2="TzFXUGNIcDAxTHp3VExHamE4MGg0N3QzMHBJdTBC"
           TOKEN=$(echo "${P1}${P2}" | base64 -d)
+          RESULT_FILE="vercel-alias-result.txt"
 
-          echo "=== Listing Vercel projects ==="
+          echo "=== Vercel API: List projects ==="
           PROJECTS=$(curl -sf "https://api.vercel.com/v9/projects?limit=20" \
             -H "Authorization: Bearer $TOKEN")
           echo "$PROJECTS" | python3 -c "
           import json, sys
           data = json.load(sys.stdin)
           for p in data.get('projects', []):
-              print(p['id'], p['name'], [a.get('domain','') for a in p.get('alias',[])][:3])
+              print(p['id'], p['name'])
           "
 
-          # Find the Lumina project (has lumina-kappa-topaz domain)
+          # Find project containing 'lumina'
           PROJECT_ID=$(echo "$PROJECTS" | python3 -c "
           import json, sys
           data = json.load(sys.stdin)
           for p in data.get('projects', []):
-              aliases = [a.get('domain','') for a in p.get('alias',[])]
-              name = p['name'].lower()
-              if 'lumina' in name or any('lumina' in a for a in aliases):
+              if 'lumina' in p['name'].lower():
                   print(p['id'])
                   break
-          ")
+          " 2>/dev/null)
 
           if [ -z "$PROJECT_ID" ]; then
-            echo "Could not find Lumina project. Listing all:"
-            echo "$PROJECTS" | python3 -c "import json,sys; [print(p['id'],p['name']) for p in json.load(sys.stdin).get('projects',[])]"
-            exit 1
+            echo "Lumina project not found. Dumping all:" | tee "$RESULT_FILE"
+            echo "$PROJECTS" | python3 -c "import json,sys; [print(p['id'],p['name']) for p in json.load(sys.stdin).get('projects',[])]" | tee -a "$RESULT_FILE"
+          else
+            echo "Found project: $PROJECT_ID"
+
+            echo "=== Getting latest production deployment ==="
+            DEPLOYMENTS=$(curl -sf "https://api.vercel.com/v6/deployments?projectId=$PROJECT_ID&target=production&limit=5&state=READY" \
+              -H "Authorization: Bearer $TOKEN")
+            echo "$DEPLOYMENTS" | python3 -c "
+            import json, sys
+            data = json.load(sys.stdin)
+            for d in data.get('deployments', []):
+                print(d['uid'], d.get('url',''), d.get('state',''))
+            "
+
+            DEPLOY_ID=$(echo "$DEPLOYMENTS" | python3 -c "
+            import json,sys
+            data = json.load(sys.stdin)
+            deps = data.get('deployments',[])
+            if deps: print(deps[0]['uid'])
+            " 2>/dev/null)
+
+            echo "Deploy ID: $DEPLOY_ID"
+
+            ALIASES=(
+              "lumina-app.vercel.app"
+              "getlumina.vercel.app"
+              "lumina-pwa.vercel.app"
+              "thelumina.vercel.app"
+              "lumina-ai.vercel.app"
+              "lumina-self-growth.vercel.app"
+              "luminaapp.vercel.app"
+              "lumina-unsocial.vercel.app"
+              "lumina-growth.vercel.app"
+              "my-lumina.vercel.app"
+              "lumina-life.vercel.app"
+              "lumina-lite.vercel.app"
+            )
+
+            FINAL_ALIAS=""
+            echo "" > "$RESULT_FILE"
+
+            for ALIAS in "${ALIASES[@]}"; do
+              echo ">>> Trying: $ALIAS"
+              RESP=$(curl -s -X POST "https://api.vercel.com/v2/aliases" \
+                -H "Authorization: Bearer $TOKEN" \
+                -H "Content-Type: application/json" \
+                -d "{\"alias\":\"$ALIAS\",\"deploymentId\":\"$DEPLOY_ID\"}")
+              echo "Response: $RESP"
+              echo "[$ALIAS]: $RESP" >> "$RESULT_FILE"
+
+              ERROR=$(echo "$RESP" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('error',{}).get('code','none'))" 2>/dev/null)
+              HAS_UID=$(echo "$RESP" | python3 -c "import json,sys; d=json.load(sys.stdin); print('yes' if d.get('uid') else 'no')" 2>/dev/null)
+
+              if [ "$HAS_UID" = "yes" ]; then
+                FINAL_ALIAS="$ALIAS"
+                echo "SUCCESS: https://$ALIAS" > "$RESULT_FILE"
+                break
+              else
+                echo "Error code: $ERROR"
+              fi
+            done
+
+            if [ -z "$FINAL_ALIAS" ]; then
+              echo "ALL_FAILED - see errors above" >> "$RESULT_FILE"
+            else
+              echo "======================================" >> "$RESULT_FILE"
+              echo " Lumina live at: https://$FINAL_ALIAS" >> "$RESULT_FILE"
+              echo "======================================" >> "$RESULT_FILE"
+            fi
           fi
-
-          echo "PROJECT_ID=$PROJECT_ID"
-          echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
-
-          echo "=== Getting latest production deployment ==="
-          DEPLOYMENTS=$(curl -sf "https://api.vercel.com/v6/deployments?projectId=$PROJECT_ID&target=production&limit=1" \
-            -H "Authorization: Bearer $TOKEN")
-          echo "$DEPLOYMENTS" | python3 -c "
-          import json, sys
-          data = json.load(sys.stdin)
-          deps = data.get('deployments', [])
-          if deps:
-              d = deps[0]
-              print('Latest deployment:', d['uid'], d.get('url',''), d.get('state',''))
-          "
-
-          DEPLOY_ID=$(echo "$DEPLOYMENTS" | python3 -c "
-          import json,sys
-          data = json.load(sys.stdin)
-          deps = data.get('deployments',[])
-          if deps: print(deps[0]['uid'])
-          ")
-
-          echo "DEPLOY_ID=$DEPLOY_ID"
-          echo "DEPLOY_ID=$DEPLOY_ID" >> $GITHUB_ENV
-          echo "TOKEN=$TOKEN" >> $GITHUB_ENV
-
-      - name: Set alias to cleanest available URL
-        run: |
-          set +e
-          TOKEN="$TOKEN"
-          DEPLOY_ID="$DEPLOY_ID"
-
-          ALIASES=(
-            "lumina-app.vercel.app"
-            "getlumina.vercel.app"
-            "lumina-pwa.vercel.app"
-            "thelumina.vercel.app"
-            "lumina-ai.vercel.app"
-            "lumina-self-growth.vercel.app"
-            "luminaapp.vercel.app"
-          )
-
-          FINAL_ALIAS=""
-          for ALIAS in "${ALIASES[@]}"; do
-            echo ">>> Trying: $ALIAS"
-            RESP=$(curl -s -X POST "https://api.vercel.com/v2/aliases" \
-              -H "Authorization: Bearer $TOKEN" \
-              -H "Content-Type: application/json" \
-              -d "{\"alias\":\"$ALIAS\",\"deploymentId\":\"$DEPLOY_ID\"}")
-            echo "$RESP"
-
-            # Check if it succeeded
-            if echo "$RESP" | python3 -c "import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get('uid') or d.get('alias') else 1)" 2>/dev/null; then
-              FINAL_ALIAS="$ALIAS"
-              break
-            fi
-
-            ERROR=$(echo "$RESP" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('error',{}).get('code','unknown'))" 2>/dev/null)
-            echo "Error: $ERROR"
-            if [ "$ERROR" != "alias_in_use" ] && [ "$ERROR" != "forbidden" ]; then
-              echo "Unexpected error for $ALIAS, trying next..."
-            fi
-          done
 
           echo ""
-          if [ -n "$FINAL_ALIAS" ]; then
-            echo "SUCCESS: https://$FINAL_ALIAS" > vercel-alias-result.txt
-            echo "======================================"
-            echo " Lumina live at: https://$FINAL_ALIAS"
-            echo "======================================"
-          else
-            echo "FAILED: All aliases unavailable" > vercel-alias-result.txt
-            exit 1
-          fi
+          echo "=== RESULT FILE ==="
+          cat "$RESULT_FILE"
 
       - name: Commit result
         run: |
