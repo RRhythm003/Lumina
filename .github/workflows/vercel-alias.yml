@@ -10,6 +10,8 @@ jobs:
   set-alias:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Try Vercel aliases in order
         run: |
           set +e
@@ -27,6 +29,7 @@ jobs:
             "lumina-self-growth.vercel.app"
           )
           SOURCE="lumina-kappa-topaz.vercel.app"
+          RESULT_FILE="vercel-alias-result.txt"
           FINAL_ALIAS=""
 
           for ALIAS in "${ALIASES[@]}"; do
@@ -35,18 +38,25 @@ jobs:
             echo "$OUTPUT"
             if echo "$OUTPUT" | grep -qiE "success|aliased|already assigned|https://"; then
               FINAL_ALIAS="$ALIAS"
+              echo "SUCCESS: https://$ALIAS" > "$RESULT_FILE"
               break
+            else
+              echo "FAILED: $ALIAS — $OUTPUT" >> "${RESULT_FILE}.log"
             fi
           done
 
-          echo ""
-          if [ -n "$FINAL_ALIAS" ]; then
-            echo "====================================="
-            echo " Lumina URL: https://$FINAL_ALIAS"
-            echo "====================================="
-          else
-            echo "All aliases attempted — check output above for details."
-            # Print full vercel help for debugging
-            npx --yes vercel alias --help 2>&1 || true
+          if [ -z "$FINAL_ALIAS" ]; then
+            echo "ALL_FAILED" > "$RESULT_FILE"
+            cat "${RESULT_FILE}.log" >> "$RESULT_FILE"
           fi
+
+          cat "$RESULT_FILE"
           exit 0
+
+      - name: Commit result
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git add vercel-alias-result.txt || true
+          git commit -m "ci: record vercel alias result" --allow-empty || true
+          git push || true
