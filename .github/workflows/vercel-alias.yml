@@ -6,6 +6,9 @@ on:
       - claude/lumina-self-growth-app-hzL2v
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   set-alias:
     runs-on: ubuntu-latest
@@ -13,6 +16,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Try Vercel aliases in order
+        id: alias
         run: |
           set +e
           # Reconstruct token from encoded parts (split to avoid secret scanning)
@@ -29,25 +33,27 @@ jobs:
             "lumina-self-growth.vercel.app"
           )
           SOURCE="lumina-kappa-topaz.vercel.app"
-          RESULT_FILE="vercel-alias-result.txt"
           FINAL_ALIAS=""
+          ALL_OUTPUT=""
 
           for ALIAS in "${ALIASES[@]}"; do
             echo ">>> Trying: $ALIAS"
             OUTPUT=$(npx --yes vercel alias "$SOURCE" "$ALIAS" --token "$VERCEL_TOKEN" --yes 2>&1)
             echo "$OUTPUT"
+            ALL_OUTPUT="$ALL_OUTPUT\n[$ALIAS]: $OUTPUT"
             if echo "$OUTPUT" | grep -qiE "success|aliased|already assigned|https://"; then
               FINAL_ALIAS="$ALIAS"
-              echo "SUCCESS: https://$ALIAS" > "$RESULT_FILE"
               break
-            else
-              echo "FAILED: $ALIAS — $OUTPUT" >> "${RESULT_FILE}.log"
             fi
           done
 
-          if [ -z "$FINAL_ALIAS" ]; then
-            echo "ALL_FAILED" > "$RESULT_FILE"
-            cat "${RESULT_FILE}.log" >> "$RESULT_FILE"
+          RESULT_FILE="vercel-alias-result.txt"
+          if [ -n "$FINAL_ALIAS" ]; then
+            echo "SUCCESS: https://$FINAL_ALIAS" > "$RESULT_FILE"
+            echo "::notice title=Lumina URL::https://$FINAL_ALIAS"
+          else
+            printf "ALL_FAILED\n$ALL_OUTPUT" > "$RESULT_FILE"
+            echo "::warning title=Alias Failed::All aliases were unavailable. Check vercel-alias-result.txt"
           fi
 
           cat "$RESULT_FILE"
@@ -57,6 +63,7 @@ jobs:
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
-          git add vercel-alias-result.txt || true
-          git commit -m "ci: record vercel alias result" --allow-empty || true
-          git push || true
+          git pull --rebase origin claude/lumina-self-growth-app-hzL2v || true
+          git add vercel-alias-result.txt
+          git diff --cached --quiet || git commit -m "ci: record vercel alias result [skip ci]"
+          git push origin HEAD:claude/lumina-self-growth-app-hzL2v || true
