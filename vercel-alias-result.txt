@@ -1,13 +1,9 @@
 PROJECT: prj_uWwEHtajUdUJRUfQwKtiRtenbH6W (lumina)
-DEPLOY: dpl_GMovevcuQqah3wnvmRnZNi4sxtHN (lumina-2b2fsfdc2-rrhythm003-8493s-projects.vercel.app)
-[lumina-app.vercel.app] {"error":{"code":"not_found","message":"Not Found"}}
-[getlumina.vercel.app] {"error":{"code":"not_found","message":"Not Found"}}
-[lumina-pwa.vercel.app] {"error":{"code":"not_found","message":"Not Found"}}
-[thelumina.vercel.app] {"error":{"code":"not_found","message":"Not Found"}}
-[lumina-ai.vercel.app] {"error":{"code":"not_found","message":"Not Found"}}
-[lumina-unsocial.vercel.app] {"error":{"code":"not_found","message":"Not Found"}}
-[lumina-growth.vercel.app] {"error":{"code":"not_found","message":"Not Found"}}
-[lumina-life.vercel.app] {"error":{"code":"not_found","message":"Not Found"}}
-[lumina-lite.vercel.app] {"error":{"code":"not_found","message":"Not Found"}}
-[my-lumina.vercel.app] {"error":{"code":"not_found","message":"Not Found"}}
-[rrhythm-lumina.vercel.app] {"error":{"code":"not_found","message":"Not Found"}}
+DEPLOY_UID: dpl_4sC6uU7AYnAfxbBtXjbc1QZY8jBT
+
+=== Alias attempts ===
+  [domain] lumina-app.vercel.app: {"error":{"code":"owned-on-other-team","domain":"lumina-app.vercel.app","message":"Cannot add lumina-app.vercel.app since it's already assigned to another project.","teamName":"Mariana's projects"}}
+  [domain] getlumina.vercel.app: {"name":"getlumina.vercel.app","apexName":"vercel.app","projectId":"prj_uWwEHtajUdUJRUfQwKtiRtenbH6W","redirect":null,"redirectStatusCode":null,"gitBranch":null,"customEnvironmentId":null,"updatedAt":1775102317130,"createdAt":1775102317130,"verified":true}
+  [alias] getlumina.vercel.app: {"uid":"7cc9bf7c609b93ea2067fcc23ed8b58953bdc8043b034222a429afa3be24e20b2b9d1580aad2f4a192948dc634bc7dc192f2be27307ce9d189f0a6b366a3c037","alias":"getlumina.vercel.app","created":"2026-04-02T03:58:37.201Z","oldDeploymentId":"dpl_DHUwPKP91tCKc6dLdbtNTkyk7Xpv"}
+
+SUCCESS: https://getlumina.vercel.app
