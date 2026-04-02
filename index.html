@@ -708,7 +708,9 @@ function defState(){
     dykCache:'',
     dykDate:'',
     psych:{drive:'',stage:'',style:'',challenge:'',ambition:'',rhythm:'',archetype:''},
-    career:{goals:[{t:'',d:90,done:false},{t:'',d:60,done:false},{t:'',d:30,done:false}],skills:[],wins:[],habits:[{l:'Review goals',done:false,d:''},{l:'1 deep-work block',done:false,d:''},{l:'Network touchpoint',done:false,d:''}]}
+    career:{goals:[{t:'',d:90,done:false},{t:'',d:60,done:false},{t:'',d:30,done:false}],skills:[],wins:[],habits:[{l:'Review goals',done:false,d:''},{l:'1 deep-work block',done:false,d:''},{l:'Network touchpoint',done:false,d:''}]},
+    nra:{},
+    feedFilter:'Hot'
   };
 }
 
@@ -731,6 +733,8 @@ function loadState(){
       if(!S.hp)S.hp={sl:null,mo:null,gl:0,ex:[],sv:false,d:''};
       if(!S.psych)S.psych={drive:'',stage:'',style:'',challenge:'',ambition:'',rhythm:'',archetype:''};
       if(!S.career)S.career={goals:[{t:'',d:90,done:false},{t:'',d:60,done:false},{t:'',d:30,done:false}],skills:[],wins:[],habits:[{l:'Review goals',done:false,d:''},{l:'1 deep-work block',done:false,d:''},{l:'Network touchpoint',done:false,d:''}]};
+      if(!S.nra)S.nra={};
+      if(!S.feedFilter)S.feedFilter='Hot';
     }
   }catch(e){S=defState()}
 }
@@ -771,6 +775,10 @@ function doResets(){
     S.ad=(S.ad||0)+1;
     // Clear DYK cache for fresh daily fact
     S.dykCache='';S.dykDate='';
+    // Reset career habits daily
+    if(S.career&&S.career.habits){
+      S.career.habits.forEach(function(h){h.done=false;h.d='';});
+    }
     // Weekly reset (Sunday)
     if(new Date().getDay()===0){
       if(S.wxp<700&&S.sh>0)S.sh=Math.max(0,S.sh-1);
@@ -793,7 +801,18 @@ function doResets(){
 // ─── RANK FUNCTIONS ───────────────────────────────────
 
 function gR(xp){
-  for(var i=RANKS.length-1;i>=0;i--){if(xp>=RANKS[i].min)return RANKS[i]}
+  for(var i=RANKS.length-1;i>=0;i--){
+    var rank=RANKS[i];
+    if(xp>=rank.min){
+      if(rank.dR&&S.dm){
+        var allMet=true;
+        DIMS.forEach(function(d){if((S.dm[d.key]||0)<rank.dR)allMet=false;});
+        if(allMet)return rank;
+      } else {
+        return rank;
+      }
+    }
+  }
   return RANKS[0];
 }
 function nR(xp){
@@ -918,11 +937,30 @@ function feedRefreshAge(){
   return Math.floor(mins/60)+'h ago';
 }
 
+function updateStockPrices(){
+  STOCKS.forEach(function(s){
+    var val=parseFloat(s.val.replace(/[$,]/g,''));
+    var direction=Math.random()<0.5?-1:1;
+    var changePct=(Math.random()*1.5+0.5)*direction;
+    var newVal=val*(1+changePct/100);
+    s.val=(s.name==='Gold'?'$':'')+Math.round(newVal).toLocaleString();
+    s.chg=(direction>0?'+':'')+Math.abs(changePct).toFixed(1)+'%';
+    s.up=(direction>0);
+  });
+}
+
 function refreshFeed(){
   feedLastRefresh=Date.now();
-  // Reset read timestamps for re-fetched articles (simulate new content)
-  // In production this would fetch live RSS; here we reset the refresh clock
-  showToast('📡 Feed refreshed!');
+  updateStockPrices();
+  var unread=NEWS.filter(function(a){return !(S.nr&&S.nr[a.id])});
+  var refreshed=Math.min(unread.length,3);
+  if(refreshed>0){
+    var times=['just now','2m','4m','7m'];
+    unread.slice(0,refreshed).forEach(function(a){
+      a.time=times[Math.floor(Math.random()*times.length)];
+    });
+  }
+  showToast('📡 Feed refreshed! '+unread.length+' unread');
   renderPage();
 }
 
@@ -1170,6 +1208,7 @@ function renderHome(){
 }
 
 function renderFeed(){
+  if(S.feedFilter)filterCat=S.feedFilter;
   var minsOld=Math.floor((Date.now()-feedLastRefresh)/60000);
   var isStale=minsOld>=30;
   var html='<div class="r ac jb" style="margin-bottom:8px">';
@@ -1552,6 +1591,12 @@ function renderLibrary(){
       html+='</div>';
     });
   } else {
+    if(S.jrn.length>=180){
+      html+='<div class="dyk-cd" style="border-color:var(--warn);background:rgba(245,158,11,.08);margin-bottom:8px">';
+      html+='<div class="xs" style="color:var(--warn)">⚠️ Journal approaching capacity ('+(200-S.jrn.length)+' slots left).</div>';
+      html+='<button onclick="exportJournal()" class="btn btn-o btn-sm" style="margin-top:6px;font-size:11px">📥 Export to JSON</button>';
+      html+='</div>';
+    }
     if(S.jrn.length===0){
       html+='<div class="cd" style="text-align:center;padding:30px">';
       html+='<div style="font-size:32px;margin-bottom:8px">📓</div>';
@@ -1573,6 +1618,17 @@ function renderLibrary(){
   }
 
   return html;
+}
+
+function exportJournal(){
+  var data=JSON.stringify(S.jrn,null,2);
+  var blob=new Blob([data],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download='lumina_journal_'+todayStr()+'.json';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  showToast('📥 Journal exported!');
 }
 
 // ─── CAREER ───────────────────────────────────────────
@@ -1721,7 +1777,14 @@ function careerSetGoal(i,val){
 function careerToggleGoal(i){
   if(!S.career||!S.career.goals[i])return;
   S.career.goals[i].done=!S.career.goals[i].done;
-  if(S.career.goals[i].done){awardXP(30,'professional');showToast('✅ Goal complete! +30 XP');}
+  if(S.career.goals[i].done){
+    awardXP(15,'professional','Career Goal Complete 🎯');
+    var app=document.getElementById('app');
+    var cel=document.createElement('div');
+    cel.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:80px;z-index:999;pointer-events:none;animation:pu .6s ease forwards';
+    cel.textContent='🎯';app.appendChild(cel);
+    setTimeout(function(){if(cel.parentNode)app.removeChild(cel);},700);
+  }
   saveState();renderPage();
 }
 
@@ -1729,7 +1792,7 @@ function careerToggleHabit(i){
   if(!S.career||!S.career.habits[i])return;
   var h=S.career.habits[i];var today=todayStr();
   if(h.done&&h.d===today){h.done=false;h.d='';}
-  else{h.done=true;h.d=today;awardXP(10,'professional');showToast('💼 Habit done! +10 XP');}
+  else{h.done=true;h.d=today;awardXP(5,'professional','Career Habit 💼');showToast('💼 Habit done! +5 XP');}
   saveState();renderPage();
 }
 
@@ -1746,8 +1809,8 @@ function careerAddSkill(){
 function careerUpSkill(i){
   if(!S.career||!S.career.skills[i])return;
   S.career.skills[i].lv=Math.min(10,S.career.skills[i].lv+1);
-  awardXP(15,'professional');
-  saveState();showToast('+15 XP — skill levelled!');renderPage();
+  awardXP(8,'professional','Skill Level Up ⚡');
+  saveState();showToast('+8 XP — skill levelled!');renderPage();
 }
 
 function careerDelSkill(i){
@@ -1762,8 +1825,8 @@ function careerAddWin(){
   if(!S.career)S.career={goals:[],skills:[],wins:[],habits:[]};
   S.career.wins.push({t:val,date:todayStr()});
   careerWinInp='';
-  awardXP(20,'professional');
-  saveState();showToast('🏆 Win logged! +20 XP');renderPage();
+  awardXP(10,'professional','Win Logged 🏆');
+  saveState();showToast('🏆 Win logged! +10 XP');renderPage();
 }
 
 function careerDelWin(i){
@@ -1778,6 +1841,10 @@ function fetchCareerCoach(){
   var ambMap={leader:'Senior Leader / Executive',founder:'Entrepreneur / Founder',specialist:'Domain Expert',changemaker:'Social Changemaker',freedom:'Autonomous professional'};
   var chalMap={focus:'struggles with focus and discipline',confidence:'battles confidence and self-doubt',procrastination:'tends to procrastinate',communication:'wants to improve communication',direction:'seeking clarity on career direction',energy:'dealing with burnout and low energy'};
   var ctx='User archetype: '+(p.archetype||'professional')+'. Career stage: '+(p.stage||'building')+'. 5-year goal: '+(ambMap[p.ambition]||p.ambition||'growth')+'. Main challenge: '+(chalMap[p.challenge]||p.challenge||'focus')+'. Professional field: '+((S.prefs&&S.prefs.workCtx)||'general')+'. Skills: '+((S.career&&S.career.skills||[]).map(function(s){return s.n;}).join(', ')||'none listed')+'.';
+  var coachTimeout=setTimeout(function(){
+    careerAiResult='⏱️ Coach timed out (slow connection). Try again?';
+    careerAiLoading=false;renderPage();
+  },8000);
   fetch('/api/claude',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -1788,12 +1855,14 @@ function fetchCareerCoach(){
       messages:[{role:'user',content:'Give me a targeted career insight based on my profile: '+ctx}]
     })
   }).then(function(r){return r.json();}).then(function(d){
+    clearTimeout(coachTimeout);
     var txt=(d.content&&d.content[0]&&d.content[0].text)||'';
     if(!txt){throw new Error('empty');}
     careerAiResult=txt.trim();careerAiLoading=false;
-    awardXP(5,'professional');renderPage();
-  }).catch(function(){
-    careerAiResult='Could not reach coach — check connection.';careerAiLoading=false;renderPage();
+    awardXP(5,'professional','Career Insight 🧠');renderPage();
+  }).catch(function(e){
+    clearTimeout(coachTimeout);
+    careerAiResult='⚠️ Coach error: '+(e.message||'unknown')+'. Retry?';careerAiLoading=false;renderPage();
   });
 }
 
@@ -1987,18 +2056,29 @@ function renderRankOverlay(){
   var html='<div class="ovl-box"><div class="ovl-hdr"><div class="bold">🏆 Rank Roadmap</div><button onclick="closeOv()" class="cls">×</button></div>';
   var cur=gR(S.xp);
   RANKS.forEach(function(r){
-    var passed=S.xp>=r.min;
+    var xpPassed=S.xp>=r.min;
+    var dimsPassed=true;
+    if(r.dR&&S.dm){DIMS.forEach(function(d){if((S.dm[d.key]||0)<r.dR)dimsPassed=false;});}
+    var unlocked=xpPassed&&dimsPassed;
     var isCur=cur.g===r.g;
-    var isLocked=!passed&&!isCur;
+    var isLocked=!unlocked&&!isCur;
     html+='<div class="rr-row'+(isCur?' cur':isLocked?' lck':'')+'">';
     html+='<div class="rr-grade" style="color:'+r.color+'">'+r.g+'</div>';
     html+='<div class="f1"><div class="bold sm">'+r.name+'</div>';
     html+='<div class="xs t2">'+r.min.toLocaleString()+' XP • '+r.desc+'</div>';
-    if(r.dR)html+='<div class="xs t2">Dim Req: '+r.dR+'+ each</div>';
+    if(r.dR){
+      var dimStatus='';
+      DIMS.forEach(function(d){
+        var met=(S.dm&&S.dm[d.key]||0)>=r.dR;
+        dimStatus+='<span style="font-size:9px;margin-right:2px">'+(met?'✅':'⚠️')+d.icon+'</span>';
+      });
+      html+='<div class="xs t2" style="margin-top:3px">Dims: '+dimStatus+'('+r.dR+'+ each)</div>';
+    }
     html+='</div>';
-    if(passed)html+='<span class="xs ac-c">✅</span>';
+    if(unlocked)html+='<span class="xs ac-c">✅</span>';
     else if(isCur)html+='<span class="xs ac-c" style="color:var(--warn)">👤 You</span>';
-    else html+='<span class="xs t2">🔒</span>';
+    else if(!xpPassed)html+='<span class="xs t2">🔒 XP</span>';
+    else html+='<span class="xs t2">🔒 Dims</span>';
     html+='</div>';
   });
   html+='</div>';
@@ -2160,7 +2240,7 @@ function openLesson(id){
   if(l){subPg='lesson';subData=l;renderPage();}
 }
 
-function setFeedCat(c){filterCat=c;renderPage();}
+function setFeedCat(c){filterCat=c;S.feedFilter=c;saveState();renderPage();}
 
 function setSleep(s){
   var prev=S.hp.sl;S.hp.sl=(prev===s?null:s);
@@ -2212,11 +2292,20 @@ function analyzeMeal(){
     try{
       var txt=d.content&&d.content[0]&&d.content[0].text||'';
       var clean=txt.replace(/```json|```/g,'').trim();
-      calResult=JSON.parse(clean);
-    }catch(e){calResult={cal:'?',p:'?',c:'?',f:'?',fi:'?'}}
+      var parsed=JSON.parse(clean);
+      if(!parsed.cal||isNaN(parsed.cal)||parsed.cal<0){throw new Error('Invalid calories');}
+      calResult={
+        cal:Math.round(parsed.cal),
+        p:Math.max(0,Math.round(parsed.p||0)),
+        c:Math.max(0,Math.round(parsed.c||0)),
+        f:Math.max(0,Math.round(parsed.f||0)),
+        fi:Math.max(0,Math.round(parsed.fi||0))
+      };
+    }catch(e){calResult=null;showToast('⚠️ Could not parse meal data. Try again.');}
     calLoading=false;renderPage();
   }).catch(function(){
-    calResult={cal:'?',p:'?',c:'?',f:'?',fi:'?'};calLoading=false;renderPage();
+    calResult=null;calLoading=false;
+    showToast('⚠️ Network error. Check connection.');renderPage();
   });
 }
 
@@ -2237,6 +2326,13 @@ function fetchDYK(){
   var topicIdx=dayNum()%pool.length;
   var topic=pool[topicIdx];
   var psychCtx=psychStyle?(' Tailor the fact slightly toward a '+psychStyle+' mindset.'):'';
+  // Cache with psych-profile hash so re-onboarding invalidates old cache
+  var psychHash=(S.psych&&S.psych.drive||'')+'|'+(psychStyle||'');
+  if(S.dykCache&&S.dykDate===todayStr()&&S._dykHash===psychHash){
+    dykText=S.dykCache;dykLoading=false;
+    if(pg==='home')renderPage();
+    return;
+  }
   fetch('/api/claude',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -2252,6 +2348,7 @@ function fetchDYK(){
     dykText=txt.trim();
     S.dykCache=dykText;
     S.dykDate=todayStr();
+    S._dykHash=psychHash;
     dykLoading=false;
     saveState();
     if(pg==='home')renderPage();
@@ -2309,8 +2406,10 @@ function answerArticleQuiz(chosen,correct,artId){
     if(i===correct)b.className='po correct';
     else if(i===chosen&&chosen!==correct)b.className='po wrong';
   });
+  if(!S.nra)S.nra={};
   if(chosen===correct){
-    var xp=calcArticleXP();
+    var attempts=S.nra[artId]||0;
+    S.nra[artId]=(attempts+1);
     if(!S.nr)S.nr={};
     if(!S.nr[artId]){
       S.nr[artId]=true;
@@ -2319,13 +2418,15 @@ function answerArticleQuiz(chosen,correct,artId){
       if(!S.dg)S.dg={n:0,p:false,r:false,d:todayStr()};
       S.dg.n=(S.dg.n||0)+1;
       if(S.dg.n===2)setTimeout(function(){awardXP(6,'world','Quest Gate 1 bonus!')},600);
+      var xp=calcArticleXP();
+      if(attempts>0)xp=Math.max(1,xp-1); // Reduce XP for retries
       awardXP(xp,'world','Article quiz');
     }
     saveState();
-    // Auto-go back after correct answer
     setTimeout(function(){subPg=null;subData=null;renderPage();},1400);
   } else {
-    // Wrong - allow retry after brief visual feedback
+    S.nra[artId]=(S.nra[artId]||0)+1;
+    saveState();
     setTimeout(function(){
       btns.forEach(function(b){b.disabled=false;b.className='po'});
     },1200);
@@ -2716,6 +2817,8 @@ function finishOb(){
   if(inp&&inp.value.trim()){if(!S.prefs)S.prefs={};S.prefs.workCtx=inp.value.trim();}
   if(!S.psych)S.psych={drive:'',stage:'',style:'',challenge:'',ambition:'',rhythm:'',archetype:''};
   S.psych.archetype=psychArchetype();
+  // Invalidate DYK cache so new psych profile gets fresh fact
+  S.dykCache='';S.dykDate='';S._dykHash='';
   S.ob=true;saveNow();
   showPsychResult();
 }
