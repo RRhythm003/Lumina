@@ -1,9 +1,11 @@
 PROJECT: prj_uWwEHtajUdUJRUfQwKtiRtenbH6W (lumina)
-DEPLOY_UID: dpl_4sC6uU7AYnAfxbBtXjbc1QZY8jBT
+DEPLOY_UID: dpl_4UnZttXkqMy8t2XuPYEfqBxbYPmd
 
 === Alias attempts ===
   [domain] lumina-app.vercel.app: {"error":{"code":"owned-on-other-team","domain":"lumina-app.vercel.app","message":"Cannot add lumina-app.vercel.app since it's already assigned to another project.","teamName":"Mariana's projects"}}
-  [domain] getlumina.vercel.app: {"name":"getlumina.vercel.app","apexName":"vercel.app","projectId":"prj_uWwEHtajUdUJRUfQwKtiRtenbH6W","redirect":null,"redirectStatusCode":null,"gitBranch":null,"customEnvironmentId":null,"updatedAt":1775102317130,"createdAt":1775102317130,"verified":true}
-  [alias] getlumina.vercel.app: {"uid":"7cc9bf7c609b93ea2067fcc23ed8b58953bdc8043b034222a429afa3be24e20b2b9d1580aad2f4a192948dc634bc7dc192f2be27307ce9d189f0a6b366a3c037","alias":"getlumina.vercel.app","created":"2026-04-02T03:58:37.201Z","oldDeploymentId":"dpl_DHUwPKP91tCKc6dLdbtNTkyk7Xpv"}
+  [domain] getlumina.vercel.app: {"error":{"code":"duplicate-team-registration","domain":"getlumina.vercel.app","message":"Cannot add getlumina.vercel.app since it's already assigned to another project.","projectName":"lumina","teamName":"rrhythm003's projects"}}
+  [domain] lumina-pwa.vercel.app: {"error":{"code":"owned-on-other-team","domain":"lumina-pwa.vercel.app","message":"Cannot add lumina-pwa.vercel.app since it's already assigned to another project.","teamName":"Amogh Srivastava's projects"}}
+  [domain] thelumina.vercel.app: {"name":"thelumina.vercel.app","apexName":"vercel.app","projectId":"prj_uWwEHtajUdUJRUfQwKtiRtenbH6W","redirect":null,"redirectStatusCode":null,"gitBranch":null,"customEnvironmentId":null,"updatedAt":1775154352623,"createdAt":1775154352623,"verified":true}
+  [alias] thelumina.vercel.app: {"uid":"272a693812223959654448575081fb67ad6768af5c594fa95006c963a66a6b8095614cc40bbf19fd194a76fba8dbdad62a3b6c632e5e780e367c8806b06ec95d","alias":"thelumina.vercel.app","created":"2026-04-02T18:25:52.691Z","oldDeploymentId":"dpl_DHUwPKP91tCKc6dLdbtNTkyk7Xpv"}
 
-SUCCESS: https://getlumina.vercel.app
+SUCCESS: https://thelumina.vercel.app
